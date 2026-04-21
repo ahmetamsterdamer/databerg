@@ -2,7 +2,7 @@
 
 > The itinerary. The rulebook is `CLAUDE.md`. Work one phase at a time. Do not leap phases without explicit user confirmation.
 
-**Current phase:** Phase 13 mostly landed (JS audit clean, font preload extended to Mono, budget validated). Only remaining item is an out-of-environment Lighthouse mobile run against a deployed preview; the source-side work is done. Awaiting deploy for the final ≥95 verification, then Phase 14.
+**Current phase:** Phase 13 complete. Preview deployed to `databerg.akara061806.workers.dev`; Lighthouse run captured in `docs/qa.md` — mobile passes ≥95 across all 15 routes (floor 95 on `/`, rest at 98–99), desktop is 100 across the board. A11y / Best Practices / SEO = 100 everywhere. Two non-blocking polish items logged to Phase 15: trailing-slash redirect tax and EN-home TBT. Ready to start Phase 14 (axe + OG + sitemap + structured data).
 
 ---
 
@@ -142,7 +142,7 @@ Goal: an empty Astro site that builds, typechecks, and serves a blank `index.ast
 - [x] **`<Image>` everywhere — N/A for now.** No images exist in the project (CLAUDE.md §2.10 bans stock photos; `/public/images/` is empty; the About page uses a placeholder slot; the home "proof row" was intentionally skipped for lack of real logos). When the first real asset lands, it must route through Astro's `<Image>` with explicit width/height and AVIF/WebP; this is carried into the pre-launch Phase 15 checklist below rather than blocked here.
 - [x] **Font preload verified, `font-display: swap`, subsetting considered.** `BaseLayout.astro` now preloads Geist Regular, Geist Medium, **and Geist Mono** (the Mono face is used above-the-fold via the numbered `font-mono` tags that sit on top of every section). `global.css` sets `font-display: swap` on all three `@font-face` declarations. Each woff2 is 44–49 KB; Geist's distribution is already Latin-subsetted, so no further subsetting is required to meet the budget.
 - [x] **JS audit per route — clean.** Verified against the built HTML: `/services`, `/services/[slug]`, `/about`, `/insights`, `/insights/[slug]`, `/work/[slug]` and all their NL parallels ship **zero** `<script>` tags. Only three pages ship JS, and each has a real interactive surface: `/` + `/nl/` (the Optimization Dashboard tablist), `/work` + `/nl/cases` (the filter toolbar), `/contact` + `/nl/contact` (form submit + conditional Turnstile widget). All scripts are inline `type="module"`, minified by Astro, no external bundles (`dist/_astro/` holds one 27 KB shared CSS file and nothing else).
-- [ ] **Lighthouse mobile ≥ 95 on every page — deferred to preview deploy.** Can't be run against the Astro dev server with any fidelity (the Cloudflare adapter and compressed production assets are the things Lighthouse should grade). After the first Cloudflare Pages preview in Phase 15, run Lighthouse against every route in the sitemap and record scores in `docs/qa.md` (a file to be created in Phase 14). If a page drops below 95, regress into this phase before launch.
+- [x] **Lighthouse mobile ≥ 95 on every page — verified.** Run on 2026-04-21 against the `databerg.akara061806.workers.dev` Workers deploy via Google PageSpeed Insights API. Mobile: 95/100/100/100 on `/`, 98–99/100/100/100 on the other 14 routes. Desktop: 100/100/100/100 everywhere. Full table + two non-blocking Phase 15 polish notes (trailing-slash redirect tax; home-page TBT headroom) are in [`docs/qa.md`](./qa.md).
 
 ## Phase 14 — Accessibility + SEO pass
 
