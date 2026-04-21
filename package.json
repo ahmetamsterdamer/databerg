@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "node scripts/build-og.mjs && astro build",
+    "build": "PUBLIC_TURNSTILE_SITE_KEY=${PUBLIC_TURNSTILE_SITE_KEY:-0x4AAAAAADAwQ9JTZCi01uBO} node scripts/build-og.mjs && PUBLIC_TURNSTILE_SITE_KEY=${PUBLIC_TURNSTILE_SITE_KEY:-0x4AAAAAADAwQ9JTZCi01uBO} astro build",
     "build:og": "node scripts/build-og.mjs",
     "preview": "pnpm run build && wrangler dev",
     "astro": "astro",
