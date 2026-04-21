@@ -2,7 +2,7 @@
 
 > The itinerary. The rulebook is `CLAUDE.md`. Work one phase at a time. Do not leap phases without explicit user confirmation.
 
-**Current phase:** Phase 14 complete. Structured data (Organization + Service/Article/CreativeWork + BreadcrumbList), `robots.txt`, filtered sitemap, documented a11y/keyboard walkthrough (code-level audit — full in-browser axe run is a reviewer step), and per-page OG image pipeline (Satori → resvg → 33 PNGs, Swiss-dark card design, build-time regeneration). Ready for Phase 15 (pre-launch).
+**Current phase:** Phase 15 in progress — autonomous items landed (dev-page removed, bilingual 404, Plausible scaffold, banned-words pass clean, decision log current). Blocked on user-action items before launch: external service signups (Resend / Turnstile / Cal.com / Plausible), custom domain + HTTPS, contact-form smoke test with real delivery, in-browser axe DevTools pass.
 
 ---
 
@@ -154,13 +154,30 @@ Goal: an empty Astro site that builds, typechecks, and serves a blank `index.ast
 
 ## Phase 15 — Pre-launch
 
-- [ ] Plausible analytics installed.
-- [ ] Contact form end-to-end smoke test with real delivery.
-- [ ] 404 and error-boundary copy in both languages.
-- [ ] Final copy pass — no banned words (CLAUDE.md §9).
-- [ ] Decision log reviewed — anything out of date?
-- [ ] Deploy to Cloudflare Pages / Netlify. Custom domain. HTTPS.
-- [ ] Post-launch checklist: monitor forms for 48h, confirm delivery.
+**Autonomous items — done:**
+
+- [x] **Plausible analytics installed** (scaffold). `BaseLayout.astro` injects the tracker only when `PUBLIC_PLAUSIBLE_DOMAIN` is set and the page is not `noIndex`. `.env.example` documents both `PUBLIC_PLAUSIBLE_DOMAIN` and `PUBLIC_PLAUSIBLE_SRC` (optional self-hosted override). Default src is `https://plausible.io/js/script.js`. No tracking shipped until the env var lands in Cloudflare project secrets.
+- [x] **404 copy in both languages.** Single `/404.astro` now carries EN above an `<hr>` and NL below (`lang="nl"` region). Single page because Cloudflare Workers serves one `404.html` regardless of the attempted path; side-by-side is the honest affordance for mixed-audience traffic.
+- [x] **Final copy pass — banned words clean.** Full `src/` grep for "solutions", "seamless", "cutting-edge", "best-in-class", "we empower", "we deliver" returned zero hits. No replacements required.
+- [x] **Decision log reviewed.** All entries current; no renamed files, removed flags, or stale package references detected.
+- [x] **`/dev/ui` visual-QA page deleted.** Phase 3 flagged it for removal pre-launch; gone in this phase.
+
+**Blocked on user action — for you:**
+
+- [ ] **Sign up for Resend** (free tier, 100/day). Create API key. Set `RESEND_API_KEY` in Cloudflare project → Settings → Variables and Secrets. Without it, `/api/contact` returns 503 with a helpful error.
+- [ ] **Sign up for Cloudflare Turnstile** (free). Create a site, paste the hostname. Set `PUBLIC_TURNSTILE_SITE_KEY` + `TURNSTILE_SECRET_KEY`. Without it the form works; the captcha widget and siteverify are skipped (form is still honeypotted).
+- [ ] **Sign up for Cal.com** (or equivalent). Create a booking page. Replace the placeholder URL in `src/pages/contact.astro` and `src/pages/nl/contact.astro`.
+- [ ] **Sign up for Plausible** (or point at a self-hosted instance). Set `PUBLIC_PLAUSIBLE_DOMAIN` to the hostname you register.
+- [ ] **Custom domain + HTTPS.** Point `databerganalytics.com` at the Cloudflare Worker; HTTPS is automatic. Update `astro.config.mjs` `SITE` constant only if the canonical hostname changes — it already matches.
+- [ ] **Contact form end-to-end smoke test with real delivery.** After the three env vars above are set, submit the form on `/contact` and `/nl/contact`. Confirm mail arrives at `ahmetkarabasdtengineer@gmail.com` with `reply_to` set to the sender.
+- [ ] **In-browser axe DevTools pass.** The seven representative URLs listed in `docs/qa.md`. Record any findings there.
+- [ ] **Post-launch checklist.** Monitor the Resend dashboard and inbox for 48 h; confirm no silent drops.
+
+**Deferred from earlier phases (post-launch polish, not gate-blocking):**
+
+- Trailing-slash 307 tax on non-root URLs (~750 ms per cold navigation). Fix requires reshaping Astro build format + sitemap + internal hrefs; not worth it if Lighthouse already passes. Revisit if engagement metrics suggest latency is hurting.
+- EN home page performance floor at 95 mobile (inline critical CSS for the dashboard). Same reasoning.
+- Remove `Hero.astro` if still unused (retained through Phase 5; Phase 14 didn't need it).
 
 ---
 

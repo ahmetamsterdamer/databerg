@@ -3,18 +3,38 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Link from '../components/ui/Link.astro';
 ---
 
-<BaseLayout title="Not found" noIndex={true}>
+<BaseLayout title="Not found — Pagina niet gevonden" noIndex={true}>
   <section class="mx-auto max-w-3xl px-6 py-32 md:py-48">
-    <p class="font-mono text-xs uppercase tracking-wider text-accent">404</p>
-    <h1 class="mt-6 font-display text-4xl leading-tight tracking-tight md:text-6xl">
-      That page isn&rsquo;t here.
-    </h1>
-    <p class="mt-6 max-w-xl text-lg leading-relaxed text-ink-muted">
-      Likely a moved or mistyped link. Head back to the home page, or reach us directly.
-    </p>
-    <div class="mt-10 flex flex-wrap gap-6 text-sm">
-      <Link href="/">Home</Link>
-      <Link href="/contact">Contact</Link>
+    <!-- EN -->
+    <div>
+      <p class="font-mono text-xs uppercase tracking-wider text-accent">404</p>
+      <h1 class="mt-6 font-display text-4xl leading-tight tracking-tight md:text-6xl">
+        That page isn&rsquo;t here.
+      </h1>
+      <p class="mt-6 max-w-xl text-lg leading-relaxed text-ink-muted">
+        Likely a moved or mistyped link. Head back to the home page, or reach us directly.
+      </p>
+      <div class="mt-8 flex flex-wrap gap-6 text-sm">
+        <Link href="/">Home</Link>
+        <Link href="/contact">Contact</Link>
+      </div>
+    </div>
+
+    <hr class="my-16 border-line/60" />
+
+    <!-- NL -->
+    <div lang="nl">
+      <p class="font-mono text-xs uppercase tracking-wider text-accent">404</p>
+      <h2 class="mt-6 font-display text-3xl leading-tight tracking-tight md:text-5xl">
+        Deze pagina staat hier niet.
+      </h2>
+      <p class="mt-6 max-w-xl text-lg leading-relaxed text-ink-muted">
+        Waarschijnlijk een verplaatste of verkeerd getypte link. Ga terug naar de home, of neem direct contact op.
+      </p>
+      <div class="mt-8 flex flex-wrap gap-6 text-sm">
+        <Link href="/nl/">Home</Link>
+        <Link href="/nl/contact">Contact</Link>
+      </div>
     </div>
   </section>
 </BaseLayout>

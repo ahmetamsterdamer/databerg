@@ -45,6 +45,10 @@ const resolvedCanonical = canonical ?? (siteUrl ? siteUrl + pathname : pathname)
 const resolvedOgImage = ogImage ?? (siteUrl ? `${siteUrl}${ogImageForPath(pathname)}` : undefined);
 const altFull = siteUrl ? siteUrl + altHref : altHref;
 const otherLocale = locale === 'en' ? 'nl' : 'en';
+
+const plausibleDomain = import.meta.env.PUBLIC_PLAUSIBLE_DOMAIN ?? '';
+const plausibleSrc =
+  import.meta.env.PUBLIC_PLAUSIBLE_SRC ?? 'https://plausible.io/js/script.js';
 ---
 
 <!doctype html>
@@ -88,6 +92,17 @@ const otherLocale = locale === 'en' ? 'nl' : 'en';
           type="application/ld+json"
           is:inline
           set:html={JSON.stringify(organizationJsonLd())}
+        />
+      )
+    }
+
+    {
+      plausibleDomain && !noIndex && (
+        <script
+          is:inline
+          defer
+          data-domain={plausibleDomain}
+          src={plausibleSrc}
         />
       )
     }
