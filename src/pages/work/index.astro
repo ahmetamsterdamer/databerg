@@ -1,0 +1,268 @@
+---
+import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ClosingCTA from '../../components/sections/ClosingCTA.astro';
+import Tag from '../../components/ui/Tag.astro';
+import { services, getService, type Service } from '../../lib/services';
+
+const all: CollectionEntry<'work'>[] = await getCollection(
+  'work',
+  (e: CollectionEntry<'work'>) => !e.data.draft && e.data.locale === 'en',
+);
+
+const sorted = all.slice().sort((a: CollectionEntry<'work'>, b: CollectionEntry<'work'>) => {
+  if (a.data.featured !== b.data.featured) return a.data.featured ? -1 : 1;
+  const ad = a.data.publishedAt?.getTime() ?? 0;
+  const bd = b.data.publishedAt?.getTime() ?? 0;
+  return bd - ad;
+});
+
+const sectors = Array.from(
+  new Set(sorted.map((e: CollectionEntry<'work'>) => e.data.sector)),
+).sort();
+
+const serviceSlugsUsed = new Set<string>();
+sorted.forEach((e: CollectionEntry<'work'>) => {
+  (e.data.services ?? []).forEach((s: string) => serviceSlugsUsed.add(s));
+});
+const servicesForFilter = services.filter((s) => serviceSlugsUsed.has(s.slug));
+
+interface EnrichedCase {
+  entry: CollectionEntry<'work'>;
+  outcome: CollectionEntry<'work'>['data']['outcomes'][number] | undefined;
+  caseServices: Service[];
+  servicesAttr: string;
+}
+
+const enriched: EnrichedCase[] = sorted.map((entry: CollectionEntry<'work'>) => {
+  const resolved = (entry.data.services ?? [])
+    .map((slug: string) => getService(slug))
+    .filter((s: Service | undefined): s is Service => Boolean(s));
+  return {
+    entry,
+    outcome: entry.data.outcomes?.[0],
+    caseServices: resolved,
+    servicesAttr: (entry.data.services ?? []).join('|'),
+  };
+});
+---
+
+<BaseLayout
+  title="Work"
+  description="Anonymized case studies from recent engagements. Real numbers, real scope, no client names."
+>
+  <!-- Header -->
+  <section class="mx-auto max-w-7xl px-6 pt-24 pb-16 md:pt-32">
+    <p class="font-mono text-xs uppercase tracking-wider text-accent">Work</p>
+    <h1 class="mt-6 max-w-4xl font-display text-5xl leading-[1.05] tracking-tight md:text-7xl">
+      Case studies, not marketing.
+    </h1>
+    <p class="mt-8 max-w-2xl text-lg leading-relaxed text-ink-muted md:text-xl">
+      Real engagements, real numbers, no client names. Anonymized at the client&rsquo;s request &mdash; the shape of the work matters more than the logo on the door.
+    </p>
+  </section>
+
+  <!-- Filter bar -->
+  <section class="border-y border-line/60 bg-bg" data-filter-bar aria-label="Filter case studies">
+    <div class="mx-auto flex max-w-7xl flex-col gap-4 px-6 py-5 md:flex-row md:items-center md:justify-between">
+      <div class="flex flex-wrap items-center gap-3">
+        <span class="font-mono text-[10px] uppercase tracking-wider text-ink-muted">Sector</span>
+        {
+          sectors.map((sector: string) => (
+            <button
+              type="button"
+              aria-pressed="false"
+              data-filter="sector"
+              data-value={sector}
+              class="border border-line bg-bg px-3 py-1 font-mono text-[11px] uppercase tracking-wider text-ink-muted transition-colors hover:border-ink hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent aria-pressed:border-accent aria-pressed:bg-accent aria-pressed:text-accent-ink"
+            >
+              {sector}
+            </button>
+          ))
+        }
+      </div>
+
+      <div class="flex flex-wrap items-center gap-3">
+        <span class="font-mono text-[10px] uppercase tracking-wider text-ink-muted">Service</span>
+        {
+          servicesForFilter.map((s) => (
+            <button
+              type="button"
+              aria-pressed="false"
+              data-filter="service"
+              data-value={s.slug}
+              class="border border-line bg-bg px-3 py-1 font-mono text-[11px] uppercase tracking-wider text-ink-muted transition-colors hover:border-ink hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent aria-pressed:border-accent aria-pressed:bg-accent aria-pressed:text-accent-ink"
+            >
+              {s.category}
+            </button>
+          ))
+        }
+      </div>
+
+      <div class="flex items-center gap-4">
+        <button
+          type="button"
+          data-filter-clear
+          class="font-mono text-[10px] uppercase tracking-wider text-ink-muted transition-colors hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+        >
+          Clear
+        </button>
+        <span
+          data-filter-count
+          aria-live="polite"
+          class="font-mono text-[10px] uppercase tracking-wider text-ink-muted"
+        >
+          {sorted.length} {sorted.length === 1 ? 'case' : 'cases'}
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Cards -->
+  <section class="bg-bg">
+    <ul
+      class="mx-auto grid max-w-7xl grid-cols-1 gap-px bg-line px-0 md:grid-cols-2"
+      data-case-list
+    >
+      {
+        enriched.map(({ entry, outcome, caseServices, servicesAttr }) => (
+          <li
+            data-case
+            data-sector={entry.data.sector}
+            data-services={servicesAttr}
+            class={`bg-bg ${entry.data.featured ? 'md:col-span-2' : ''}`}
+          >
+            <a
+              href={`/work/${entry.id}`}
+              class="group/card flex h-full flex-col gap-6 p-8 transition-colors hover:bg-surface focus-visible:outline focus-visible:-outline-offset-2 focus-visible:outline-2 focus-visible:outline-accent md:p-10"
+            >
+              <div class="flex flex-wrap items-center gap-2">
+                <Tag>{entry.data.sector}</Tag>
+                {entry.data.location && <Tag>{entry.data.location}</Tag>}
+                {entry.data.featured && <Tag variant="accent">Current engagement</Tag>}
+              </div>
+
+              <h2
+                class={`font-display tracking-tight transition-colors group-hover/card:text-accent ${
+                  entry.data.featured
+                    ? 'text-3xl leading-tight md:text-5xl lg:text-6xl'
+                    : 'text-2xl leading-tight md:text-3xl'
+                }`}
+              >
+                {entry.data.title}
+              </h2>
+
+              <p
+                class={`leading-relaxed text-ink-muted ${
+                  entry.data.featured ? 'max-w-3xl text-lg md:text-xl' : 'text-base'
+                }`}
+              >
+                {entry.data.summary}
+              </p>
+
+              {outcome && (
+                <div class="mt-auto flex items-baseline gap-4 border-t border-line/60 pt-4">
+                  <span
+                    class="font-display text-3xl leading-none tracking-tight text-accent md:text-4xl"
+                    set:html={outcome.metric}
+                  />
+                  <span class="font-mono text-[10px] uppercase tracking-wider text-ink-muted">
+                    {outcome.note}
+                  </span>
+                </div>
+              )}
+
+              <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
+                <div class="flex flex-wrap gap-1.5">
+                  {caseServices.map((s) => (
+                    <Tag>{s.category}</Tag>
+                  ))}
+                </div>
+                <span class="flex items-baseline gap-1 font-mono text-[10px] uppercase tracking-wider text-ink-muted transition-colors group-hover/card:text-accent">
+                  Read case
+                  <span
+                    aria-hidden="true"
+                    class="inline-block translate-y-px transition-transform group-hover/card:translate-x-1"
+                  >
+                    →
+                  </span>
+                </span>
+              </div>
+            </a>
+          </li>
+        ))
+      }
+
+      <li
+        data-empty
+        hidden
+        class="col-span-1 bg-bg px-8 py-16 text-center md:col-span-2 md:px-10 md:py-24"
+      >
+        <p class="font-mono text-xs uppercase tracking-wider text-ink-muted">No cases match</p>
+        <p class="mt-4 text-base text-ink-muted">
+          Try removing a filter. Or tell us directly what you are wrestling with.
+        </p>
+      </li>
+    </ul>
+  </section>
+
+  <ClosingCTA />
+</BaseLayout>
+
+<script>
+  const bar = document.querySelector<HTMLElement>('[data-filter-bar]');
+  if (bar) {
+    const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-case]'));
+    const buttons = Array.from(bar.querySelectorAll<HTMLButtonElement>('button[data-filter]'));
+    const clearBtn = bar.querySelector<HTMLButtonElement>('[data-filter-clear]');
+    const countEl = document.querySelector<HTMLElement>('[data-filter-count]');
+    const emptyEl = document.querySelector<HTMLElement>('[data-empty]');
+    const total = cards.length;
+
+    const getActiveFilters = () => {
+      const active = { sector: new Set<string>(), service: new Set<string>() };
+      buttons.forEach((btn) => {
+        if (btn.getAttribute('aria-pressed') === 'true') {
+          const kind = btn.dataset.filter;
+          const value = btn.dataset.value;
+          if ((kind === 'sector' || kind === 'service') && value) {
+            active[kind].add(value);
+          }
+        }
+      });
+      return active;
+    };
+
+    const applyFilters = () => {
+      const active = getActiveFilters();
+      let visible = 0;
+      cards.forEach((card) => {
+        const sector = card.dataset.sector ?? '';
+        const serviceList = (card.dataset.services ?? '').split('|').filter(Boolean);
+        const sectorOk = active.sector.size === 0 || active.sector.has(sector);
+        const serviceOk = active.service.size === 0 || serviceList.some((s) => active.service.has(s));
+        const show = sectorOk && serviceOk;
+        card.hidden = !show;
+        if (show) visible++;
+      });
+      if (countEl) {
+        countEl.textContent = `${visible} of ${total} ${total === 1 ? 'case' : 'cases'}`;
+      }
+      if (emptyEl) emptyEl.hidden = visible > 0;
+    };
+
+    buttons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const current = btn.getAttribute('aria-pressed') === 'true';
+        btn.setAttribute('aria-pressed', String(!current));
+        applyFilters();
+      });
+    });
+
+    clearBtn?.addEventListener('click', () => {
+      buttons.forEach((btn) => btn.setAttribute('aria-pressed', 'false'));
+      applyFilters();
+    });
+  }
+</script>

@@ -1,0 +1,102 @@
+---
+import '../styles/global.css';
+import Nav from '../components/layout/Nav.astro';
+import Footer from '../components/layout/Footer.astro';
+import { alternateLocaleUrl, getLocaleFromPath, t } from '../lib/i18n';
+
+interface Props {
+  title?: string;
+  description?: string;
+  canonical?: string;
+  ogImage?: string;
+  noIndex?: boolean;
+}
+
+const {
+  title,
+  description,
+  canonical,
+  ogImage,
+  noIndex = false,
+} = Astro.props;
+
+const pathname = Astro.url.pathname;
+const locale = getLocaleFromPath(pathname);
+const altHref = alternateLocaleUrl(pathname);
+const siteUrl = Astro.site?.toString().replace(/\/$/, '') ?? '';
+
+const defaults = {
+  en: {
+    title: 'databerganalytics — business and tech optimization',
+    description:
+      'We find the drag in your operations — slow processes, expensive cloud bills, siloed data, manual work that shouldn\u2019t be manual — and remove it.',
+  },
+  nl: {
+    title: 'databerganalytics — optimalisatie voor bedrijf en techniek',
+    description:
+      'We vinden wrijving in uw processen \u2014 trage workflows, dure cloudrekeningen, gescheiden data, handwerk dat geen handwerk hoeft te zijn \u2014 en halen die weg.',
+  },
+} as const;
+
+const resolvedTitle = title ? `${title} — databerganalytics` : defaults[locale].title;
+const resolvedDescription = description ?? defaults[locale].description;
+const resolvedCanonical = canonical ?? (siteUrl ? siteUrl + pathname : pathname);
+const resolvedOgImage = ogImage ?? (siteUrl ? `${siteUrl}/og/default.png` : undefined);
+const altFull = siteUrl ? siteUrl + altHref : altHref;
+const otherLocale = locale === 'en' ? 'nl' : 'en';
+---
+
+<!doctype html>
+<html lang={locale} class="scroll-smooth">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#0a0b0d" />
+
+    <title>{resolvedTitle}</title>
+    <meta name="description" content={resolvedDescription} />
+    <link rel="canonical" href={resolvedCanonical} />
+    {noIndex && <meta name="robots" content="noindex,nofollow" />}
+
+    <link rel="alternate" hreflang={locale} href={resolvedCanonical} />
+    <link rel="alternate" hreflang={otherLocale} href={altFull} />
+    <link rel="alternate" hreflang="x-default" href={siteUrl || '/'} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={resolvedTitle} />
+    <meta property="og:description" content={resolvedDescription} />
+    <meta property="og:url" content={resolvedCanonical} />
+    <meta property="og:locale" content={locale === 'nl' ? 'nl_NL' : 'en_US'} />
+    {resolvedOgImage && <meta property="og:image" content={resolvedOgImage} />}
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={resolvedTitle} />
+    <meta name="twitter:description" content={resolvedDescription} />
+    {resolvedOgImage && <meta name="twitter:image" content={resolvedOgImage} />}
+
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/Geist-Regular.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/Geist-Medium.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/GeistMono-Regular.woff2" crossorigin />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+    <slot name="head" />
+  </head>
+  <body class="flex min-h-dvh flex-col bg-bg text-ink">
+    <a
+      href="#main"
+      class="sr-only z-50 bg-accent px-4 py-2 text-sm font-medium text-accent-ink focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
+    >
+      {t(locale, 'skipToContent')}
+    </a>
+
+    <Nav />
+
+    <main id="main" class="flex-1">
+      <slot />
+    </main>
+
+    <Footer />
+  </body>
+</html>

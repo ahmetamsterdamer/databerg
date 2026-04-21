@@ -1,0 +1,51 @@
+---
+import Link from '../ui/Link.astro';
+import Tag from '../ui/Tag.astro';
+import { getLocaleFromPath, t } from '../../lib/i18n';
+import { getLocalizedServices } from '../../lib/services';
+
+const locale = getLocaleFromPath(Astro.url.pathname);
+const services = getLocalizedServices(locale);
+const servicesIndexHref = locale === 'nl' ? '/nl/diensten' : '/services';
+const serviceDetailHref = (slug: string) =>
+  locale === 'nl' ? `/nl/diensten/${slug}` : `/services/${slug}`;
+---
+
+<section class="border-t border-line/60 bg-bg">
+  <div class="mx-auto max-w-7xl px-6 py-24 md:py-32">
+    <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+      <div>
+        <p class="font-mono text-xs uppercase tracking-wider text-ink-muted">{t(locale, 'servicesSectionEyebrow')}</p>
+        <h2 class="mt-4 max-w-2xl font-display text-3xl leading-tight tracking-tight md:text-5xl">
+          {t(locale, 'servicesSectionTitle')}
+        </h2>
+      </div>
+      <Link href={servicesIndexHref} variant="arrow" class="text-sm">{t(locale, 'servicesSectionAllLink')}</Link>
+    </div>
+
+    <ul class="mt-16 grid grid-cols-1 gap-px bg-line/60 md:grid-cols-2">
+      {
+        services.map((service) => (
+          <li class="bg-bg">
+            <a
+              href={serviceDetailHref(service.slug)}
+              class="group/card flex h-full flex-col justify-between gap-8 p-8 transition-colors hover:bg-surface focus-visible:outline focus-visible:-outline-offset-2 focus-visible:outline-2 focus-visible:outline-accent md:p-10"
+            >
+              <div>
+                <Tag>{service.category}</Tag>
+                <h3 class="mt-6 font-display text-2xl leading-tight tracking-tight md:text-3xl">
+                  {service.title}
+                </h3>
+                <p class="mt-4 text-base leading-relaxed text-ink-muted" set:html={service.summary} />
+              </div>
+              <p class="flex items-baseline gap-1 font-mono text-xs uppercase tracking-wider text-ink-muted transition-colors group-hover/card:text-accent">
+                {t(locale, 'ctaReadMore')}
+                <span aria-hidden="true" class="inline-block translate-y-px transition-transform group-hover/card:translate-x-1">→</span>
+              </p>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>

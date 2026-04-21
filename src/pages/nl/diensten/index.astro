@@ -1,0 +1,85 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Tag from '../../../components/ui/Tag.astro';
+import Link from '../../../components/ui/Link.astro';
+import ClosingCTA from '../../../components/sections/ClosingCTA.astro';
+import { getLocalizedServices } from '../../../lib/services';
+
+const services = getLocalizedServices('nl');
+---
+
+<BaseLayout
+  title="Diensten"
+  description="Vier diensten, één belofte: minder wrijving. Cloudkosten, data & pipelines, procesautomatisering en systeemstrategie — elk een gericht stuk werk met een duidelijk begin en einde."
+>
+  <section class="mx-auto max-w-7xl px-6 pt-24 pb-16 md:pt-32">
+    <p class="font-mono text-xs uppercase tracking-wider text-accent">Diensten</p>
+    <h1 class="mt-6 max-w-4xl font-display text-5xl leading-[1.05] tracking-tight md:text-7xl">
+      Vier diensten. Eén belofte: minder wrijving.
+    </h1>
+    <p class="mt-8 max-w-2xl text-lg leading-relaxed text-ink-muted md:text-xl">
+      Elke dienst heeft een duidelijk begin, een duidelijk einde en een geschreven overdracht. Geen retainer. Geen abonnement. Geen lock-in. Als we niet de juiste match zijn, zeggen wij dat in het gesprek.
+    </p>
+  </section>
+
+  <section class="border-t border-line/60 bg-bg">
+    <ul class="mx-auto max-w-7xl divide-y divide-line/60 px-6">
+      {
+        services.map((service, index) => (
+          <li>
+            <a
+              href={`/nl/diensten/${service.slug}`}
+              class="group/row grid gap-8 py-16 transition-colors focus-visible:outline focus-visible:-outline-offset-4 focus-visible:outline-2 focus-visible:outline-accent md:grid-cols-12 md:py-24"
+            >
+              <div class="md:col-span-3">
+                <p class="font-mono text-xs uppercase tracking-wider text-ink-muted">
+                  {String(index + 1).padStart(2, '0')} &middot; {service.category}
+                </p>
+              </div>
+
+              <div class="md:col-span-6">
+                <h2 class="font-display text-3xl leading-tight tracking-tight md:text-5xl">
+                  <span class="transition-colors group-hover/row:text-accent">{service.title}</span>
+                </h2>
+                <p class="mt-6 max-w-2xl text-base leading-relaxed text-ink-muted md:text-lg">
+                  {service.lede}
+                </p>
+              </div>
+
+              <div class="flex items-end justify-start md:col-span-3 md:justify-end">
+                <span class="flex items-baseline gap-1 font-mono text-xs uppercase tracking-wider text-ink-muted transition-colors group-hover/row:text-accent">
+                  Lees details
+                  <span aria-hidden="true" class="inline-block translate-y-px transition-transform group-hover/row:translate-x-1">→</span>
+                </span>
+              </div>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section class="border-t border-line/60 bg-bg">
+    <div class="mx-auto max-w-7xl px-6 py-24">
+      <div class="grid gap-12 md:grid-cols-12">
+        <div class="md:col-span-5">
+          <Tag>Twijfelt u welke?</Tag>
+          <h2 class="mt-6 font-display text-3xl leading-tight tracking-tight md:text-4xl">
+            Dat zeggen wij eerlijk in het gesprek.
+          </h2>
+        </div>
+        <div class="md:col-span-7">
+          <p class="text-lg leading-relaxed text-ink-muted">
+            De meeste trajecten beginnen met een beschrijving van een symptoom, niet van een dienst. &ldquo;De rekening groeit.&rdquo; &ldquo;Het dashboard klopt niet.&rdquo; &ldquo;Dit kostte vroeger een dag.&rdquo; Wij pakken het vandaar op.
+          </p>
+          <div class="mt-6 flex flex-wrap gap-6 text-sm">
+            <Link href="/nl/contact" variant="arrow">Plan een gesprek</Link>
+            <Link href="/nl/cases" variant="arrow">Bekijk eerdere cases</Link>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <ClosingCTA />
+</BaseLayout>

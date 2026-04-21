@@ -1,0 +1,73 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+type ButtonVariant = 'primary' | 'secondary' | 'ghost';
+type ButtonSize = 'sm' | 'md' | 'lg';
+
+interface BaseProps {
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+  class?: string;
+}
+
+type AsLink = BaseProps &
+  Omit<HTMLAttributes<'a'>, 'class'> & {
+    href: string;
+    external?: boolean;
+  };
+
+type AsButton = BaseProps &
+  Omit<HTMLAttributes<'button'>, 'class'> & {
+    href?: undefined;
+    type?: 'button' | 'submit' | 'reset';
+    disabled?: boolean;
+  };
+
+type Props = AsLink | AsButton;
+
+const { variant = 'primary', size = 'md', class: className = '', ...rest } = Astro.props;
+
+const isLink = 'href' in rest && rest.href !== undefined;
+
+const base = [
+  'inline-flex items-center justify-center gap-2 font-medium transition-all',
+  'disabled:cursor-not-allowed disabled:opacity-50',
+  'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent',
+  'aria-disabled:cursor-not-allowed aria-disabled:opacity-50',
+].join(' ');
+
+const variantClasses: Record<ButtonVariant, string> = {
+  primary: 'border border-accent bg-accent text-accent-ink hover:brightness-110 active:brightness-95',
+  secondary: 'border border-line bg-transparent text-ink hover:border-ink hover:text-accent active:border-ink',
+  ghost: 'border border-transparent bg-transparent text-ink-muted hover:text-ink active:text-accent',
+};
+
+const sizeClasses: Record<ButtonSize, string> = {
+  sm: 'h-8 px-3 text-xs',
+  md: 'h-10 px-5 text-sm',
+  lg: 'h-12 px-6 text-sm',
+};
+
+const classes = [base, variantClasses[variant], sizeClasses[size], className].filter(Boolean).join(' ');
+
+let linkExtras: Record<string, string> = {};
+if (isLink) {
+  const linkProps = rest as AsLink;
+  if (linkProps.external) {
+    linkExtras.target = '_blank';
+    linkExtras.rel = 'noopener noreferrer';
+  }
+}
+---
+
+{
+  isLink ? (
+    <a class={classes} {...(rest as AsLink)} {...linkExtras}>
+      <slot />
+    </a>
+  ) : (
+    <button class={classes} {...(rest as AsButton)}>
+      <slot />
+    </button>
+  )
+}

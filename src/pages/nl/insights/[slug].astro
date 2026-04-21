@@ -1,0 +1,185 @@
+---
+import { getCollection, render } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Button from '../../../components/ui/Button.astro';
+import Link from '../../../components/ui/Link.astro';
+
+export async function getStaticPaths() {
+  const entries: CollectionEntry<'posts'>[] = await getCollection(
+    'posts',
+    (entry: CollectionEntry<'posts'>) => !entry.data.draft && entry.data.locale === 'nl',
+  );
+  return entries.map((entry: CollectionEntry<'posts'>) => ({
+    params: { slug: entry.data.slug ?? entry.id.replace(/^nl\//, '') },
+    props: { entry },
+  }));
+}
+
+interface Props {
+  entry: CollectionEntry<'posts'>;
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const data = entry.data;
+
+const dateFormatter = new Intl.DateTimeFormat('nl-NL', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+
+const allEntries: CollectionEntry<'posts'>[] = await getCollection(
+  'posts',
+  (e: CollectionEntry<'posts'>) => !e.data.draft && e.data.locale === 'nl',
+);
+const otherEntries = allEntries.filter((e: CollectionEntry<'posts'>) => e.id !== entry.id).slice(0, 2);
+---
+
+<BaseLayout title={data.title} description={data.summary}>
+  <article>
+
+    <section class="mx-auto max-w-3xl px-6 pt-24 md:pt-32">
+      <Link href="/nl/insights">
+        <span aria-hidden="true">←</span>
+        <span>Alle inzichten</span>
+      </Link>
+    </section>
+
+    <section class="mx-auto max-w-3xl px-6 pt-10 pb-12">
+      <p class="font-mono text-xs uppercase tracking-wider text-ink-muted">
+        {dateFormatter.format(data.publishedAt)}
+      </p>
+      <h1 class="mt-6 font-display text-4xl leading-[1.1] tracking-tight md:text-6xl">
+        {data.title}
+      </h1>
+      <p class="mt-6 text-lg leading-relaxed text-ink-muted md:text-xl">
+        {data.summary}
+      </p>
+    </section>
+
+    <section class="bg-bg">
+      <div class="mx-auto max-w-3xl px-6 pb-20 md:pb-28">
+        <div class="prose-body">
+          <Content />
+        </div>
+      </div>
+    </section>
+
+    <section class="border-t border-line/60 bg-surface">
+      <div class="mx-auto max-w-5xl px-6 py-24 text-center md:py-32">
+        <p class="font-mono text-xs uppercase tracking-wider text-accent">Wij staan klaar</p>
+        <h2 class="mt-6 font-display text-4xl leading-tight tracking-tight md:text-6xl">
+          Een gesprek van 30 minuten. Geen slides.
+        </h2>
+        <p class="mt-6 text-lg leading-relaxed text-ink-muted">
+          Vertel ons wat duur, traag of onduidelijk is. Wij zeggen eerlijk of we de juiste match zijn.
+        </p>
+        <div class="mt-10 flex justify-center">
+          <Button href="/nl/contact" size="lg">Plan een gesprek</Button>
+        </div>
+      </div>
+    </section>
+
+    {
+      otherEntries.length > 0 && (
+        <section class="border-t border-line/60 bg-bg">
+          <div class="mx-auto max-w-7xl px-6 py-16">
+            <p class="font-mono text-xs uppercase tracking-wider text-ink-muted">Meer inzichten</p>
+            <ul class="mt-8 grid grid-cols-1 gap-px border border-line bg-line md:grid-cols-2">
+              {otherEntries.map((e) => (
+                <li class="bg-bg">
+                  <a
+                    href={`/nl/insights/${e.data.slug ?? e.id.replace(/^nl\//, '')}`}
+                    class="group/card flex h-full flex-col gap-4 p-6 transition-colors hover:bg-surface focus-visible:outline focus-visible:-outline-offset-2 focus-visible:outline-2 focus-visible:outline-accent md:p-8"
+                  >
+                    <p class="font-mono text-[10px] uppercase tracking-wider text-ink-muted">
+                      {dateFormatter.format(e.data.publishedAt)}
+                    </p>
+                    <p class="font-display text-xl leading-tight tracking-tight transition-colors group-hover/card:text-accent md:text-2xl">
+                      {e.data.title}
+                    </p>
+                    <p class="text-sm leading-relaxed text-ink-muted">{e.data.summary}</p>
+                    <span class="mt-auto flex items-baseline gap-1 font-mono text-[10px] uppercase tracking-wider text-ink-muted transition-colors group-hover/card:text-accent">
+                      Lezen
+                      <span aria-hidden="true" class="inline-block translate-y-px transition-transform group-hover/card:translate-x-1">→</span>
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )
+    }
+  </article>
+</BaseLayout>
+
+<style>
+  .prose-body :global(h2) {
+    font-family: var(--font-display);
+    font-size: 1.75rem;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    margin-top: 3rem;
+    margin-bottom: 1rem;
+    color: var(--color-ink);
+  }
+  .prose-body :global(h2:first-child) { margin-top: 0; }
+  .prose-body :global(h3) {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    line-height: 1.3;
+    margin-top: 2rem;
+    margin-bottom: 0.5rem;
+    color: var(--color-ink);
+  }
+  .prose-body :global(p) {
+    font-size: 1.0625rem;
+    line-height: 1.7;
+    color: var(--color-ink-muted);
+    margin-top: 1.25rem;
+  }
+  .prose-body :global(p:first-child) { margin-top: 0; }
+  .prose-body :global(p strong) { color: var(--color-ink); font-weight: 500; }
+  .prose-body :global(ul) { margin-top: 1.25rem; padding-left: 1.25rem; list-style: none; }
+  .prose-body :global(ul li) {
+    position: relative;
+    font-size: 1.0625rem;
+    line-height: 1.7;
+    color: var(--color-ink-muted);
+    margin-top: 0.5rem;
+  }
+  .prose-body :global(ul li::before) {
+    content: '';
+    position: absolute;
+    left: -1.25rem;
+    top: 0.8em;
+    width: 0.4rem;
+    height: 1px;
+    background-color: var(--color-accent);
+  }
+  .prose-body :global(code) {
+    font-family: var(--font-mono);
+    font-size: 0.875em;
+    color: var(--color-accent);
+    background-color: var(--color-surface);
+    padding: 0.1em 0.35em;
+  }
+  .prose-body :global(a) {
+    color: var(--color-ink);
+    text-decoration: underline;
+    text-decoration-color: var(--color-accent);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+  }
+  .prose-body :global(a:hover) { color: var(--color-accent); }
+  .prose-body :global(hr) {
+    margin-top: 3rem;
+    margin-bottom: 2rem;
+    border: 0;
+    border-top: 1px solid var(--color-line);
+  }
+  .prose-body :global(em) { color: var(--color-ink-muted); font-style: italic; }
+</style>

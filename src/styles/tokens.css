@@ -1,0 +1,55 @@
+/* ---------------------------------------------------------------------------
+ * tokens.css — single source of truth for design tokens.
+ * Tailwind v4 consumes the @theme block and auto-generates utilities:
+ *   --color-ink      → text-ink / bg-ink / border-ink
+ *   --font-display   → font-display
+ *   --radius-md      → rounded-md
+ * Do not add hardcoded colors in components. Add a token here first.
+ * ------------------------------------------------------------------------- */
+
+@theme {
+  /* ---- Color (atmospheric dark canvas — the default) -------------------- */
+  --color-bg:         #0a0b0d;
+  --color-surface:    #131518;
+  --color-ink:        #ece9e0;
+  --color-ink-muted:  #9a9691;
+  --color-accent:     #d9a05b;
+  --color-accent-ink: #0a0b0d;
+  --color-line:       #242830;
+
+  /* ---- Typography ------------------------------------------------------- */
+  --font-display: 'Geist', sans-serif;
+  --font-body:    'Geist', sans-serif;
+  --font-sans:    'Geist', sans-serif;
+  --font-mono:    'Geist Mono', monospace;
+
+  /* ---- Radius (hard-edge, no exceptions) -------------------------------- */
+  --radius-xs:  0;
+  --radius-sm:  0;
+  --radius-md:  0;
+  --radius-lg:  0;
+  --radius-xl:  0;
+  --radius-2xl: 0;
+  --radius-3xl: 0;
+
+  /* ---- Motion ----------------------------------------------------------- */
+  --ease-default: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --duration-micro:   200ms;
+  --duration-section: 550ms;
+  --duration-hero:    1100ms;
+}
+
+/* ---- Light inversion (tight, same brand) --------------------------------
+ * Apply with <html data-theme="light"> or a prefers-color-scheme hook.
+ * This is not a separate aesthetic — it is the same design inverted.
+ * -------------------------------------------------------------------------- */
+[data-theme='light'] {
+  --color-bg:         #f7f5ef;
+  --color-surface:    #ffffff;
+  --color-ink:        #0a0b0d;
+  --color-ink-muted:  #55524c;
+  --color-accent:     #b47a38;
+  --color-accent-ink: #ffffff;
+  --color-line:       #e4dfd4;
+}

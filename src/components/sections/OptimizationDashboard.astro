@@ -1,0 +1,458 @@
+---
+import Button from '../ui/Button.astro';
+import Tag from '../ui/Tag.astro';
+import { getLocaleFromPath, t, type Locale } from '../../lib/i18n';
+
+// TODO(data): swap the bar percentages + delta/readout copy for real engagement
+// outcomes once we have permissioned client data. Structure already supports it.
+
+interface Kpi {
+  label: string;
+  beforeCaption: string;
+  afterCaption: string;
+  beforePct: number;
+  afterPct: number;
+  delta: string;
+  readout: string;
+}
+
+interface Scenario {
+  id: string;
+  tabLabel: string;
+  subtitle: string;
+  kpis: Kpi[];
+}
+
+const scenariosByLocale: Record<Locale, Scenario[]> = {
+  en: [
+    {
+      id: 'cloud-cost',
+      tabLabel: 'Cloud cost',
+      subtitle: 'Cloud spend · typical audit shape',
+      kpis: [
+        {
+          label: 'Monthly cloud spend',
+          beforeCaption: 'Today',
+          afterCaption: 'After right-sizing',
+          beforePct: 100,
+          afterPct: 58,
+          delta: 'Cut meaningfully',
+          readout:
+            'Right-size compute, catch idle storage, renegotiate committed use. The quiet reduction most teams leave on the table.',
+        },
+        {
+          label: 'Idle compute',
+          beforeCaption: 'Provisioned',
+          afterCaption: 'Actually used',
+          beforePct: 100,
+          afterPct: 18,
+          delta: 'Most of it gone',
+          readout: 'Over-provisioning hides as "safety for peak." Usually it isn\u2019t — just habit.',
+        },
+        {
+          label: 'Orphaned resources',
+          beforeCaption: 'Forgotten',
+          afterCaption: 'Cleaned up',
+          beforePct: 100,
+          afterPct: 4,
+          delta: 'Near zero',
+          readout:
+            'Snapshots, volumes, load balancers from projects that ended months ago. All billable, none needed.',
+        },
+      ],
+    },
+    {
+      id: 'process-time',
+      tabLabel: 'Process time',
+      subtitle: 'Manual workflow · typical cycle shape',
+      kpis: [
+        {
+          label: 'Cycle time',
+          beforeCaption: 'Today',
+          afterCaption: 'After automation',
+          beforePct: 100,
+          afterPct: 40,
+          delta: 'More than halved',
+          readout:
+            'Most of the lag is waiting, not working. We find the handoffs and remove them.',
+        },
+        {
+          label: 'Manual touches per task',
+          beforeCaption: 'Handled by people',
+          afterCaption: 'Kept by people',
+          beforePct: 100,
+          afterPct: 25,
+          delta: 'Down to essentials',
+          readout:
+            'Every manual touch is a place the process can drop. Fewer touches, fewer dropped balls.',
+        },
+        {
+          label: 'Team hours on manual work',
+          beforeCaption: 'Per week',
+          afterCaption: 'Per week',
+          beforePct: 100,
+          afterPct: 30,
+          delta: 'Two-thirds back',
+          readout: 'Time your team can spend on the work only they can do.',
+        },
+      ],
+    },
+    {
+      id: 'data-quality',
+      tabLabel: 'Data quality',
+      subtitle: 'Reporting layer · typical consolidation shape',
+      kpis: [
+        {
+          label: 'Source systems',
+          beforeCaption: 'Scattered',
+          afterCaption: 'Consolidated',
+          beforePct: 100,
+          afterPct: 14,
+          delta: 'One truth, not many',
+          readout:
+            'One warehouse the team actually trusts. Ends the "which number is right" meetings.',
+        },
+        {
+          label: 'Refresh latency',
+          beforeCaption: 'Overnight',
+          afterCaption: 'Near real-time',
+          beforePct: 100,
+          afterPct: 2,
+          delta: 'Minutes, not hours',
+          readout: 'Decisions get made on what\u2019s happening, not on what happened.',
+        },
+        {
+          label: 'Duplicate records',
+          beforeCaption: 'In reports',
+          afterCaption: 'After dedup at ingest',
+          beforePct: 100,
+          afterPct: 6,
+          delta: 'Down to noise',
+          readout: 'Dedup at ingest, not in reports. The reports get believed again.',
+        },
+      ],
+    },
+  ],
+  nl: [
+    {
+      id: 'cloud-cost',
+      tabLabel: 'Cloudkosten',
+      subtitle: 'Cloud-uitgaven · typische auditvorm',
+      kpis: [
+        {
+          label: 'Cloudkosten per maand',
+          beforeCaption: 'Vandaag',
+          afterCaption: 'Na right-sizing',
+          beforePct: 100,
+          afterPct: 58,
+          delta: 'Merkbaar verlaagd',
+          readout:
+            'Compute op maat, idle opslag opsporen, committed use opnieuw afstemmen. De stille reductie die de meeste teams laten liggen.',
+        },
+        {
+          label: 'Idle compute',
+          beforeCaption: 'Toegewezen',
+          afterCaption: 'Daadwerkelijk benut',
+          beforePct: 100,
+          afterPct: 18,
+          delta: 'Het meeste weg',
+          readout:
+            'Over-provisioning verstopt zich als "veiligheid voor de piek." Meestal is het gewoon gewoonte.',
+        },
+        {
+          label: 'Verweesde resources',
+          beforeCaption: 'Vergeten',
+          afterCaption: 'Opgeruimd',
+          beforePct: 100,
+          afterPct: 4,
+          delta: 'Bijna nul',
+          readout:
+            'Snapshots, volumes en load balancers van projecten die maanden geleden eindigden. Allemaal factureerbaar, geen enkele nodig.',
+        },
+      ],
+    },
+    {
+      id: 'process-time',
+      tabLabel: 'Procestijd',
+      subtitle: 'Handmatige workflow · typische cyclusvorm',
+      kpis: [
+        {
+          label: 'Doorlooptijd',
+          beforeCaption: 'Vandaag',
+          afterCaption: 'Na automatisering',
+          beforePct: 100,
+          afterPct: 40,
+          delta: 'Meer dan gehalveerd',
+          readout:
+            'Het meeste oponthoud is wachten, geen werken. Wij vinden de overdrachten en halen ze eruit.',
+        },
+        {
+          label: 'Handmatige acties per taak',
+          beforeCaption: 'Door mensen',
+          afterCaption: 'Bij mensen gehouden',
+          beforePct: 100,
+          afterPct: 25,
+          delta: 'Terug naar essentie',
+          readout:
+            'Elke handmatige handeling is een plek waar het proces kan vallen. Minder handelingen, minder gemiste overdrachten.',
+        },
+        {
+          label: 'Uren handwerk per week',
+          beforeCaption: 'Per week',
+          afterCaption: 'Per week',
+          beforePct: 100,
+          afterPct: 30,
+          delta: 'Tweederde terug',
+          readout: 'Tijd die uw team besteedt aan werk dat alleen zij kunnen doen.',
+        },
+      ],
+    },
+    {
+      id: 'data-quality',
+      tabLabel: 'Datakwaliteit',
+      subtitle: 'Rapportagelaag · typische consolidatievorm',
+      kpis: [
+        {
+          label: 'Bronsystemen',
+          beforeCaption: 'Verspreid',
+          afterCaption: 'Geconsolideerd',
+          beforePct: 100,
+          afterPct: 14,
+          delta: 'Eén waarheid, niet meer',
+          readout:
+            'Eén warehouse waar het team daadwerkelijk op vertrouwt. Einde aan "welk cijfer klopt nou?"-meetings.',
+        },
+        {
+          label: 'Ververslatency',
+          beforeCaption: "'s nachts",
+          afterCaption: 'Bijna real-time',
+          beforePct: 100,
+          afterPct: 2,
+          delta: 'Minuten in plaats van uren',
+          readout:
+            'Beslissingen gaan over wat er nu gebeurt, niet over wat er is gebeurd.',
+        },
+        {
+          label: 'Dubbele records',
+          beforeCaption: 'In rapportages',
+          afterCaption: 'Na dedup bij ingest',
+          beforePct: 100,
+          afterPct: 6,
+          delta: 'Terug tot ruis',
+          readout: 'Dedup bij ingest, niet in rapportages. De rapportages worden weer geloofd.',
+        },
+      ],
+    },
+  ],
+};
+
+const locale = getLocaleFromPath(Astro.url.pathname);
+const scenarios = scenariosByLocale[locale];
+
+const contactHref = locale === 'nl' ? '/nl/contact' : '/contact';
+const servicesHref = locale === 'nl' ? '/nl/diensten' : '/services';
+---
+
+<section class="relative overflow-hidden">
+  <div class="mx-auto grid max-w-7xl gap-16 px-6 pt-24 pb-32 md:grid-cols-12 md:gap-10 md:pt-32 lg:gap-16">
+
+    <div class="md:col-span-5">
+      <p class="font-mono text-xs uppercase tracking-wider text-accent">{t(locale, 'heroEyebrow')}</p>
+
+      <h1 class="mt-6 font-display text-5xl leading-[1.05] tracking-tight md:text-6xl lg:text-7xl">
+        {t(locale, 'heroHeadline')}
+      </h1>
+
+      <p class="mt-8 max-w-xl text-lg leading-relaxed text-ink-muted md:text-xl">
+        {t(locale, 'heroSubhead')}
+      </p>
+
+      <div
+        role="tablist"
+        aria-label={locale === 'nl' ? 'Optimalisatiescenario\u2019s' : 'Optimization scenarios'}
+        class="mt-10 grid grid-cols-3 gap-px border border-line bg-line"
+        data-dashboard-tablist
+      >
+        {
+          scenarios.map((s, i) => (
+            <button
+              role="tab"
+              type="button"
+              id={`tab-${s.id}`}
+              aria-controls={`panel-${s.id}`}
+              aria-selected={i === 0 ? 'true' : 'false'}
+              tabindex={i === 0 ? 0 : -1}
+              data-scenario={s.id}
+              class="group/tab flex flex-col items-start gap-2 bg-bg p-4 text-left transition-colors hover:bg-surface focus-visible:outline focus-visible:-outline-offset-2 focus-visible:outline-2 focus-visible:outline-accent aria-selected:bg-surface"
+            >
+              <span class="font-mono text-[10px] uppercase tracking-wider text-ink-muted transition-colors group-aria-selected/tab:text-accent">
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <span class="font-display text-sm text-ink-muted transition-colors group-aria-selected/tab:text-ink md:text-base">
+                {s.tabLabel}
+              </span>
+            </button>
+          ))
+        }
+      </div>
+
+      <div class="mt-10 flex flex-wrap items-center gap-4">
+        <Button href={contactHref} size="lg">{t(locale, 'ctaBookCall')}</Button>
+        <Button href={servicesHref} variant="secondary" size="lg">{t(locale, 'ctaSeeServices')}</Button>
+      </div>
+
+      <p class="mt-6 max-w-md font-mono text-[10px] uppercase tracking-wider text-ink-muted">
+        {t(locale, 'heroDisclaimer')}
+      </p>
+    </div>
+
+    <div class="md:col-span-7">
+      <div class="relative border border-line bg-surface" data-dashboard-frame>
+        {
+          scenarios.map((s, i) => (
+            <div
+              id={`panel-${s.id}`}
+              role="tabpanel"
+              aria-labelledby={`tab-${s.id}`}
+              data-scenario={s.id}
+              hidden={i > 0}
+              class="flex flex-col"
+            >
+              <div class="flex items-center justify-between border-b border-line/60 px-6 py-4">
+                <div class="flex items-center gap-3">
+                  <span
+                    aria-hidden="true"
+                    class="inline-block h-1.5 w-1.5 animate-pulse bg-accent motion-reduce:animate-none"
+                  />
+                  <span class="font-mono text-[11px] uppercase tracking-wider text-ink-muted">
+                    {s.subtitle}
+                  </span>
+                </div>
+                <Tag>{t(locale, 'snapshot')}</Tag>
+              </div>
+
+              <ul class="divide-y divide-line/60">
+                {
+                  s.kpis.map((k, ki) => (
+                    <li class="px-6 py-6" data-kpi-index={ki}>
+                      <div class="flex items-baseline justify-between gap-4">
+                        <span class="font-display text-base text-ink md:text-lg">{k.label}</span>
+                        <span class="font-mono text-[11px] uppercase tracking-wider text-accent">
+                          {k.delta}
+                        </span>
+                      </div>
+
+                      <div class="mt-4 grid gap-3">
+                        <div class="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
+                          <div class="h-2 bg-bg" aria-hidden="true">
+                            <div
+                              class="h-full bg-line"
+                              style={`width: ${k.beforePct}%`}
+                              data-bar="before"
+                              data-target-width={k.beforePct}
+                            />
+                          </div>
+                          <span class="min-w-[5.5rem] text-right font-mono text-[10px] uppercase tracking-wider text-ink-muted">
+                            {k.beforeCaption}
+                          </span>
+                        </div>
+                        <div class="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
+                          <div class="h-2 bg-bg" aria-hidden="true">
+                            <div
+                              class="h-full bg-accent transition-[width] duration-700 ease-out"
+                              style={`width: ${k.afterPct}%`}
+                              data-bar="after"
+                              data-target-width={k.afterPct}
+                            />
+                          </div>
+                          <span class="min-w-[5.5rem] text-right font-mono text-[10px] uppercase tracking-wider text-accent">
+                            {k.afterCaption}
+                          </span>
+                        </div>
+                      </div>
+
+                      <p class="mt-4 text-sm leading-relaxed text-ink-muted">{k.readout}</p>
+                    </li>
+                  ))
+                }
+              </ul>
+
+              <div class="flex items-center justify-between border-t border-line/60 px-6 py-3">
+                <span class="font-mono text-[10px] uppercase tracking-wider text-ink-muted">
+                  method &middot; audit &middot; plan &middot; ship
+                </span>
+                <span class="font-mono text-[10px] uppercase tracking-wider text-ink-muted">
+                  {s.id}
+                </span>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const tablist = document.querySelector<HTMLElement>('[data-dashboard-tablist]');
+  if (tablist) {
+    const tabs = Array.from(tablist.querySelectorAll<HTMLButtonElement>('[role="tab"]'));
+    const panels = Array.from(document.querySelectorAll<HTMLElement>('[role="tabpanel"][data-scenario]'));
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const setBarsForPanel = (panel: HTMLElement, animated: boolean) => {
+      const bars = panel.querySelectorAll<HTMLElement>('[data-bar]');
+      bars.forEach((bar) => {
+        const target = Number(bar.dataset.targetWidth ?? '0');
+        if (animated) {
+          bar.style.width = '100%';
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              bar.style.width = `${target}%`;
+            });
+          });
+        } else {
+          bar.style.width = `${target}%`;
+        }
+      });
+    };
+
+    const activate = (scenarioId: string, { focus = false } = {}) => {
+      tabs.forEach((tab) => {
+        const match = tab.dataset.scenario === scenarioId;
+        tab.setAttribute('aria-selected', String(match));
+        tab.setAttribute('tabindex', match ? '0' : '-1');
+        if (match && focus) tab.focus();
+      });
+      panels.forEach((panel) => {
+        const match = panel.dataset.scenario === scenarioId;
+        panel.hidden = !match;
+        if (match) {
+          setBarsForPanel(panel, !reducedMotion);
+        }
+      });
+    };
+
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        const id = tab.dataset.scenario;
+        if (id) activate(id);
+      });
+    });
+
+    tablist.addEventListener('keydown', (event) => {
+      const currentIndex = tabs.findIndex((t) => t.getAttribute('aria-selected') === 'true');
+      if (currentIndex === -1) return;
+      let nextIndex = currentIndex;
+      if (event.key === 'ArrowRight') nextIndex = (currentIndex + 1) % tabs.length;
+      else if (event.key === 'ArrowLeft') nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+      else if (event.key === 'Home') nextIndex = 0;
+      else if (event.key === 'End') nextIndex = tabs.length - 1;
+      else return;
+      event.preventDefault();
+      const next = tabs[nextIndex];
+      const id = next?.dataset.scenario;
+      if (id) activate(id, { focus: true });
+    });
+  }
+</script>

@@ -1,0 +1,52 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+interface Props extends Omit<HTMLAttributes<'input'>, 'class' | 'type'> {
+  id: string;
+  label: string;
+  type?: 'text' | 'email' | 'tel' | 'url' | 'number' | 'password' | 'search';
+  hint?: string;
+  class?: string;
+  wrapperClass?: string;
+}
+
+const {
+  id,
+  name = id,
+  label,
+  type = 'text',
+  required = false,
+  hint,
+  class: className = '',
+  wrapperClass = '',
+  ...rest
+} = Astro.props;
+
+const hintId = hint ? `${id}-hint` : undefined;
+---
+
+<div class={`flex flex-col gap-2 ${wrapperClass}`}>
+  <label for={id} class="font-mono text-xs uppercase tracking-wider text-ink-muted">
+    {label}
+    {required && <span aria-hidden="true" class="text-accent"> *</span>}
+  </label>
+  <input
+    id={id}
+    name={name}
+    type={type}
+    required={required}
+    aria-describedby={hintId}
+    class={[
+      'h-12 border border-line bg-surface px-4 text-sm text-ink',
+      'placeholder:text-ink-muted',
+      'focus-visible:border-accent focus-visible:outline-none',
+      'disabled:cursor-not-allowed disabled:opacity-50',
+      'transition-colors',
+      className,
+    ]
+      .filter(Boolean)
+      .join(' ')}
+    {...rest}
+  />
+  {hint && <p id={hintId} class="text-xs text-ink-muted">{hint}</p>}
+</div>

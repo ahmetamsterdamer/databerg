@@ -1,0 +1,234 @@
+---
+// TODO(copy): confirm Cal.com URL (placeholder below) or swap in the real booking link.
+// TODO(copy): confirm LinkedIn URL — lifted from the CV.
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Button from '../components/ui/Button.astro';
+import Input from '../components/ui/Input.astro';
+import Textarea from '../components/ui/Textarea.astro';
+import Link from '../components/ui/Link.astro';
+import Tag from '../components/ui/Tag.astro';
+
+const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '';
+
+// TODO(copy): replace with the real Cal.com / calendar link once set up.
+const calendarUrl = 'https://cal.com/ahmet-karabas';
+const contactEmail = 'ahmetkarabasdtengineer@gmail.com';
+const linkedinUrl = 'https://linkedin.com/in/ahmetkarabas3917';
+---
+
+<BaseLayout
+  title="Contact"
+  description="Book a 30-minute call, or write us a note. We will tell you honestly on the call whether we are the right fit."
+>
+  {
+    turnstileSiteKey && (
+      <Fragment slot="head">
+        <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer />
+      </Fragment>
+    )
+  }
+
+  <!-- Hero -->
+  <section class="mx-auto max-w-7xl px-6 pt-24 pb-16 md:pt-32">
+    <p class="font-mono text-xs uppercase tracking-wider text-accent">Contact</p>
+    <h1 class="mt-6 max-w-4xl font-display text-5xl leading-[1.05] tracking-tight md:text-7xl">
+      Let&rsquo;s talk.
+    </h1>
+    <p class="mt-8 max-w-2xl text-lg leading-relaxed text-ink-muted md:text-xl">
+      Tell us what is expensive, slow, or confusing. We will tell you honestly whether we are the right fit &mdash; on the call, not after three emails.
+    </p>
+  </section>
+
+  <!-- Primary: Book a call -->
+  <section class="border-t border-line/60 bg-surface">
+    <div class="mx-auto max-w-7xl px-6 py-20 md:py-24">
+      <div class="grid gap-12 md:grid-cols-12 md:items-center">
+        <div class="md:col-span-7">
+          <Tag variant="accent">Fastest path</Tag>
+          <h2 class="mt-6 font-display text-3xl leading-tight tracking-tight md:text-5xl">
+            Book a 30-minute call.
+          </h2>
+          <p class="mt-6 max-w-xl text-base leading-relaxed text-ink-muted md:text-lg">
+            No slides. No sales script. Pick a slot that works, tell us the one thing that&rsquo;s dragging, and we will tell you what a useful first week looks like &mdash; or that we are not the right fit.
+          </p>
+        </div>
+        <div class="flex flex-col gap-4 md:col-span-5 md:items-end">
+          <Button href={calendarUrl} size="lg" external>
+            Pick a slot
+          </Button>
+          <p class="font-mono text-[10px] uppercase tracking-wider text-ink-muted">
+            Opens calendar in a new tab
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Secondary: Form -->
+  <section class="border-t border-line/60 bg-bg">
+    <div class="mx-auto max-w-7xl px-6 py-20 md:py-28">
+      <div class="grid gap-12 md:grid-cols-12">
+        <div class="md:col-span-5">
+          <p class="font-mono text-xs uppercase tracking-wider text-ink-muted">Or write first</p>
+          <h2 class="mt-6 font-display text-3xl leading-tight tracking-tight md:text-4xl">
+            Prefer a note?
+          </h2>
+          <p class="mt-6 max-w-md text-base leading-relaxed text-ink-muted">
+            Drop us a short description of the thing that is dragging. We will reply within two working days &mdash; most of the time the same day &mdash; either with a proposed call slot or with an honest &ldquo;we are not the right fit here.&rdquo;
+          </p>
+          <div class="mt-6 space-y-2 text-sm text-ink-muted">
+            <p class="font-mono text-[10px] uppercase tracking-wider">Direct</p>
+            <p>
+              <Link href={`mailto:${contactEmail}`}>{contactEmail}</Link>
+            </p>
+            <p>
+              <Link href={linkedinUrl} variant="external">LinkedIn</Link>
+            </p>
+          </div>
+        </div>
+
+        <div class="md:col-span-7">
+          <form
+            id="contact-form"
+            method="POST"
+            action="/api/contact"
+            class="flex flex-col gap-6 border border-line bg-surface p-6 md:p-10"
+            novalidate
+            data-contact-form
+          >
+            <!-- Honeypot (hidden from real users, bots tend to fill every input) -->
+            <div aria-hidden="true" class="absolute -left-[10000px] top-auto h-px w-px overflow-hidden">
+              <label>
+                Leave this field empty.
+                <input type="text" name="website" tabindex="-1" autocomplete="off" />
+              </label>
+            </div>
+
+            <div class="grid gap-6 md:grid-cols-2">
+              <Input id="contact-name" name="name" label="Name" required autocomplete="name" />
+              <Input
+                id="contact-email"
+                name="email"
+                label="Email"
+                type="email"
+                required
+                autocomplete="email"
+              />
+            </div>
+            <Input
+              id="contact-organization"
+              name="organization"
+              label="Organization"
+              hint="Optional — helps us come prepared."
+              autocomplete="organization"
+            />
+            <Textarea
+              id="contact-message"
+              name="message"
+              label="What&rsquo;s dragging?"
+              required
+              rows={6}
+              placeholder="A few sentences is enough. The bill is growing, the dashboard is wrong, the process takes four days when it should take four hours &mdash; that kind of thing."
+            />
+
+            {
+              turnstileSiteKey ? (
+                <div class="cf-turnstile" data-sitekey={turnstileSiteKey} data-theme="dark" />
+              ) : (
+                <!-- Turnstile skipped until PUBLIC_TURNSTILE_SITE_KEY is set in .env -->
+                <p class="font-mono text-[10px] uppercase tracking-wider text-ink-muted">
+                  Anti-spam check is skipped in this environment.
+                </p>
+              )
+            }
+
+            <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+              <Button type="submit" size="lg">
+                <span data-submit-idle>Send</span>
+                <span data-submit-busy hidden>Sending&hellip;</span>
+              </Button>
+              <p class="font-mono text-[10px] uppercase tracking-wider text-ink-muted">
+                We read everything. No newsletter.
+              </p>
+            </div>
+
+            <p
+              role="status"
+              aria-live="polite"
+              class="hidden text-sm"
+              data-form-message
+            />
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('[data-contact-form]');
+  if (form) {
+    const submitBtn = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+    const idleLabel = form.querySelector<HTMLElement>('[data-submit-idle]');
+    const busyLabel = form.querySelector<HTMLElement>('[data-submit-busy]');
+    const statusEl = form.querySelector<HTMLElement>('[data-form-message]');
+
+    const setBusy = (busy: boolean) => {
+      if (submitBtn) submitBtn.disabled = busy;
+      if (idleLabel) idleLabel.hidden = busy;
+      if (busyLabel) busyLabel.hidden = !busy;
+    };
+
+    const setStatus = (kind: 'success' | 'error' | null, text: string) => {
+      if (!statusEl) return;
+      if (!kind) {
+        statusEl.classList.add('hidden');
+        statusEl.textContent = '';
+        return;
+      }
+      statusEl.classList.remove('hidden');
+      statusEl.className =
+        kind === 'success'
+          ? 'text-sm text-accent'
+          : 'text-sm text-ink';
+      statusEl.textContent = text;
+    };
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      setStatus(null, '');
+      setBusy(true);
+
+      try {
+        const formData = new FormData(form);
+        const resp = await fetch('/api/contact', {
+          method: 'POST',
+          body: formData,
+          headers: { Accept: 'application/json' },
+        });
+        const data = (await resp.json()) as { ok: boolean; error?: string };
+
+        if (resp.ok && data.ok) {
+          setStatus('success', 'Thank you — we will reply within two working days.');
+          form.reset();
+          // Reset Turnstile widget if present
+          const cf = (window as unknown as { turnstile?: { reset: () => void } }).turnstile;
+          cf?.reset();
+        } else {
+          setStatus(
+            'error',
+            data.error ?? 'Something went wrong. Try again or email us directly.',
+          );
+        }
+      } catch {
+        setStatus(
+          'error',
+          'Network error. Check your connection and try again, or email us directly.',
+        );
+      } finally {
+        setBusy(false);
+      }
+    });
+  }
+</script>

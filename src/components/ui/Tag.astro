@@ -1,0 +1,23 @@
+---
+type TagVariant = 'default' | 'accent';
+
+interface Props {
+  variant?: TagVariant;
+  class?: string;
+}
+
+const { variant = 'default', class: className = '' } = Astro.props;
+
+const base = 'inline-flex items-center border px-2 py-1 font-mono text-[10px] uppercase tracking-wider leading-none';
+
+const variantClasses: Record<TagVariant, string> = {
+  default: 'border-line text-ink-muted',
+  accent: 'border-accent text-accent',
+};
+
+const classes = [base, variantClasses[variant], className].filter(Boolean).join(' ');
+---
+
+<span class={classes}>
+  <slot />
+</span>

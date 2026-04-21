@@ -1,0 +1,83 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Tag from '../../components/ui/Tag.astro';
+import Link from '../../components/ui/Link.astro';
+import ClosingCTA from '../../components/sections/ClosingCTA.astro';
+import { services } from '../../lib/services';
+---
+
+<BaseLayout
+  title="Services"
+  description="Four engagements, one promise: less drag. Cloud cost, data & pipelines, process automation, and systems strategy — each a focused piece of work with a clear start and end."
+>
+  <section class="mx-auto max-w-7xl px-6 pt-24 pb-16 md:pt-32">
+    <p class="font-mono text-xs uppercase tracking-wider text-accent">Services</p>
+    <h1 class="mt-6 max-w-4xl font-display text-5xl leading-[1.05] tracking-tight md:text-7xl">
+      Four engagements. One promise: less drag.
+    </h1>
+    <p class="mt-8 max-w-2xl text-lg leading-relaxed text-ink-muted md:text-xl">
+      Each engagement has a clear start, a clear end, and a written handover. No retainer. No subscription. No lock-in. If we are not the right fit, we will tell you on the call.
+    </p>
+  </section>
+
+  <section class="border-t border-line/60 bg-bg">
+    <ul class="mx-auto max-w-7xl divide-y divide-line/60 px-6">
+      {
+        services.map((service, index) => (
+          <li>
+            <a
+              href={`/services/${service.slug}`}
+              class="group/row grid gap-8 py-16 transition-colors focus-visible:outline focus-visible:-outline-offset-4 focus-visible:outline-2 focus-visible:outline-accent md:grid-cols-12 md:py-24"
+            >
+              <div class="md:col-span-3">
+                <p class="font-mono text-xs uppercase tracking-wider text-ink-muted">
+                  {String(index + 1).padStart(2, '0')} &middot; {service.category}
+                </p>
+              </div>
+
+              <div class="md:col-span-6">
+                <h2 class="font-display text-3xl leading-tight tracking-tight md:text-5xl">
+                  <span class="transition-colors group-hover/row:text-accent">{service.title}</span>
+                </h2>
+                <p class="mt-6 max-w-2xl text-base leading-relaxed text-ink-muted md:text-lg">
+                  {service.lede}
+                </p>
+              </div>
+
+              <div class="flex items-end justify-start md:col-span-3 md:justify-end">
+                <span class="flex items-baseline gap-1 font-mono text-xs uppercase tracking-wider text-ink-muted transition-colors group-hover/row:text-accent">
+                  Read detail
+                  <span aria-hidden="true" class="inline-block translate-y-px transition-transform group-hover/row:translate-x-1">→</span>
+                </span>
+              </div>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section class="border-t border-line/60 bg-bg">
+    <div class="mx-auto max-w-7xl px-6 py-24">
+      <div class="grid gap-12 md:grid-cols-12">
+        <div class="md:col-span-5">
+          <Tag>Not sure which?</Tag>
+          <h2 class="mt-6 font-display text-3xl leading-tight tracking-tight md:text-4xl">
+            We will tell you on the call, honestly.
+          </h2>
+        </div>
+        <div class="md:col-span-7">
+          <p class="text-lg leading-relaxed text-ink-muted">
+            Most engagements start with a description of a symptom, not a service. "The bill is growing." "The dashboard is wrong." "This used to take a day." We take it from there.
+          </p>
+          <div class="mt-6 flex flex-wrap gap-6 text-sm">
+            <Link href="/contact" variant="arrow">Book a call</Link>
+            <Link href="/work" variant="arrow">See past work</Link>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <ClosingCTA />
+</BaseLayout>

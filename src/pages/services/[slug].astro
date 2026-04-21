@@ -1,0 +1,245 @@
+---
+import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Button from '../../components/ui/Button.astro';
+import Link from '../../components/ui/Link.astro';
+import Tag from '../../components/ui/Tag.astro';
+import { services, type Service } from '../../lib/services';
+
+export function getStaticPaths() {
+  return services.map((service) => ({
+    params: { slug: service.slug },
+    props: { service },
+  }));
+}
+
+interface Props {
+  service: Service;
+}
+
+const { service } = Astro.props;
+const otherServices = services.filter((s) => s.slug !== service.slug);
+
+const relatedCases: CollectionEntry<'work'>[] = await getCollection(
+  'work',
+  (e: CollectionEntry<'work'>) =>
+    !e.data.draft && e.data.locale === 'en' && (e.data.services ?? []).includes(service.slug),
+);
+---
+
+<BaseLayout title={service.title} description={service.summary.replace(/&rsquo;/g, "'").replace(/&mdash;/g, '—')}>
+  <article>
+
+    <!-- Header -->
+    <section class="mx-auto max-w-7xl px-6 pt-24 pb-16 md:pt-32">
+      <div class="flex items-center gap-3 text-sm">
+        <Link href="/services">
+          <span aria-hidden="true">←</span>
+          <span>All services</span>
+        </Link>
+      </div>
+
+      <div class="mt-10 grid gap-8 md:grid-cols-12">
+        <div class="md:col-span-8">
+          <Tag>{service.category}</Tag>
+          <h1 class="mt-6 font-display text-5xl leading-[1.05] tracking-tight md:text-7xl">
+            {service.title}
+          </h1>
+          <p class="mt-8 max-w-2xl text-lg leading-relaxed text-ink-muted md:text-xl">
+            {service.lede}
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 01 Problem -->
+    <section class="border-t border-line/60 bg-bg">
+      <div class="mx-auto grid max-w-7xl gap-8 px-6 py-20 md:grid-cols-12 md:py-28">
+        <div class="md:col-span-4">
+          <p class="font-mono text-xs uppercase tracking-wider text-accent">01 &middot; The problem</p>
+        </div>
+        <div class="md:col-span-8">
+          <p class="font-display text-2xl leading-snug tracking-tight text-ink md:text-3xl">
+            {service.problem}
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02 Approach -->
+    <section class="border-t border-line/60 bg-bg">
+      <div class="mx-auto grid max-w-7xl gap-8 px-6 py-20 md:grid-cols-12 md:py-28">
+        <div class="md:col-span-4">
+          <p class="font-mono text-xs uppercase tracking-wider text-accent">02 &middot; How we work it</p>
+          <p class="mt-4 max-w-xs text-sm text-ink-muted">
+            The sequence is flexible; the discipline of starting with an audit is not.
+          </p>
+        </div>
+        <div class="md:col-span-8">
+          <ol class="divide-y divide-line/60 border-y border-line/60">
+            {
+              service.approach.map((step, index) => (
+                <li class="flex gap-6 py-5">
+                  <span class="font-mono text-xs uppercase tracking-wider text-ink-muted">
+                    {String(index + 1).padStart(2, '0')}
+                  </span>
+                  <p class="text-base leading-relaxed text-ink md:text-lg" set:html={step} />
+                </li>
+              ))
+            }
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- 03 Outcome -->
+    <section class="border-t border-line/60 bg-surface">
+      <div class="mx-auto grid max-w-7xl gap-8 px-6 py-20 md:grid-cols-12 md:py-28">
+        <div class="md:col-span-4">
+          <p class="font-mono text-xs uppercase tracking-wider text-accent">03 &middot; What you get back</p>
+        </div>
+        <div class="md:col-span-8">
+          <p class="font-display text-3xl leading-snug tracking-tight text-ink md:text-4xl" set:html={service.outcome} />
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 Typical engagement shape -->
+    <section class="border-t border-line/60 bg-bg">
+      <div class="mx-auto max-w-7xl px-6 py-20 md:py-28">
+        <div class="grid gap-8 md:grid-cols-12">
+          <div class="md:col-span-4">
+            <p class="font-mono text-xs uppercase tracking-wider text-accent">04 &middot; Shape of engagement</p>
+            <p class="mt-4 max-w-xs text-sm text-ink-muted">
+              Typical ranges. We commit to the specifics in the written scope before work starts.
+            </p>
+          </div>
+          <dl class="grid grid-cols-1 gap-px border border-line bg-line md:col-span-8 md:grid-cols-2">
+            <div class="bg-bg p-6">
+              <dt class="font-mono text-[10px] uppercase tracking-wider text-ink-muted">Duration</dt>
+              <dd class="mt-3 font-display text-lg text-ink" set:html={service.engagement.duration} />
+            </div>
+            <div class="bg-bg p-6">
+              <dt class="font-mono text-[10px] uppercase tracking-wider text-ink-muted">Team</dt>
+              <dd class="mt-3 text-base text-ink" set:html={service.engagement.team} />
+            </div>
+            <div class="bg-bg p-6">
+              <dt class="font-mono text-[10px] uppercase tracking-wider text-ink-muted">Access needed</dt>
+              <dd class="mt-3 text-base text-ink" set:html={service.engagement.access} />
+            </div>
+            <div class="bg-bg p-6">
+              <dt class="font-mono text-[10px] uppercase tracking-wider text-ink-muted">What you keep</dt>
+              <dd class="mt-3 text-base text-ink" set:html={service.engagement.keep} />
+            </div>
+          </dl>
+        </div>
+      </div>
+    </section>
+
+    <!-- Related work -->
+    <section class="border-t border-line/60 bg-bg">
+      <div class="mx-auto max-w-7xl px-6 py-20">
+        <div class="grid gap-8 md:grid-cols-12">
+          <div class="md:col-span-4">
+            <Tag>Related work</Tag>
+            <p class="mt-4 max-w-xs text-sm text-ink-muted">
+              Anonymized case studies from real engagements in this service area.
+            </p>
+          </div>
+          <div class="md:col-span-8">
+            {
+              relatedCases.length > 0 ? (
+                <ul class="grid grid-cols-1 gap-px border border-line bg-line md:grid-cols-2">
+                  {relatedCases.map((c) => (
+                    <li class="bg-bg">
+                      <a
+                        href={`/work/${c.id}`}
+                        class="group/card flex h-full flex-col gap-4 p-6 transition-colors hover:bg-surface focus-visible:outline focus-visible:-outline-offset-2 focus-visible:outline-2 focus-visible:outline-accent"
+                      >
+                        <div class="flex flex-wrap gap-2">
+                          <Tag>{c.data.sector}</Tag>
+                          {c.data.location && <Tag>{c.data.location}</Tag>}
+                        </div>
+                        <p class="font-display text-lg leading-tight tracking-tight transition-colors group-hover/card:text-accent md:text-xl">
+                          {c.data.title}
+                        </p>
+                        {c.data.outcomes?.[0] && (
+                          <p class="mt-auto flex items-baseline gap-2 border-t border-line/60 pt-3">
+                            <span
+                              class="font-display text-2xl leading-none tracking-tight text-accent"
+                              set:html={c.data.outcomes[0].metric}
+                            />
+                            <span class="font-mono text-[10px] uppercase tracking-wider text-ink-muted">
+                              {c.data.outcomes[0].note}
+                            </span>
+                          </p>
+                        )}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div>
+                  <p class="text-base leading-relaxed text-ink-muted md:text-lg">
+                    We publish case studies as clients approve them. None up yet for this service. Tell us what you are wrestling with on the call and we will share what is relevant.
+                  </p>
+                  <div class="mt-6">
+                    <Link href="/contact" variant="arrow">
+                      Book a call
+                    </Link>
+                  </div>
+                </div>
+              )
+            }
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Closing CTA + other services -->
+    <section class="border-t border-line/60 bg-surface">
+      <div class="mx-auto max-w-5xl px-6 py-24 text-center md:py-32">
+        <p class="font-mono text-xs uppercase tracking-wider text-accent">Ready when you are</p>
+        <h2 class="mt-6 font-display text-4xl leading-tight tracking-tight md:text-6xl">
+          A 30-minute call. No slides.
+        </h2>
+        <p class="mt-6 text-lg leading-relaxed text-ink-muted">
+          Tell us what is expensive, slow, or confusing. We will tell you honestly whether we are the right fit.
+        </p>
+        <div class="mt-10 flex justify-center">
+          <Button href="/contact" size="lg">Book a call</Button>
+        </div>
+      </div>
+    </section>
+
+    <section class="border-t border-line/60 bg-bg">
+      <div class="mx-auto max-w-7xl px-6 py-16">
+        <p class="font-mono text-xs uppercase tracking-wider text-ink-muted">Other services</p>
+        <ul class="mt-8 grid grid-cols-1 gap-px border border-line bg-line md:grid-cols-3">
+          {
+            otherServices.map((s) => (
+              <li class="bg-bg">
+                <a
+                  href={`/services/${s.slug}`}
+                  class="group/card flex h-full flex-col justify-between gap-6 p-6 transition-colors hover:bg-surface focus-visible:outline focus-visible:-outline-offset-2 focus-visible:outline-2 focus-visible:outline-accent"
+                >
+                  <div>
+                    <Tag>{s.category}</Tag>
+                    <h3 class="mt-4 font-display text-xl leading-tight tracking-tight">
+                      {s.title}
+                    </h3>
+                  </div>
+                  <span class="flex items-baseline gap-1 font-mono text-xs uppercase tracking-wider text-ink-muted transition-colors group-hover/card:text-accent">
+                    Read detail
+                    <span aria-hidden="true" class="inline-block translate-y-px transition-transform group-hover/card:translate-x-1">→</span>
+                  </span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
+  </article>
+</BaseLayout>

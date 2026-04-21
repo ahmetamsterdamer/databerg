@@ -1,0 +1,89 @@
+---
+import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import ClosingCTA from '../../../components/sections/ClosingCTA.astro';
+
+const dateFormatter = new Intl.DateTimeFormat('nl-NL', {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric',
+});
+
+const all: CollectionEntry<'posts'>[] = await getCollection(
+  'posts',
+  (e: CollectionEntry<'posts'>) => !e.data.draft && e.data.locale === 'nl',
+);
+
+const sorted = all.slice().sort((a: CollectionEntry<'posts'>, b: CollectionEntry<'posts'>) => {
+  const ad = a.data.publishedAt?.getTime() ?? 0;
+  const bd = b.data.publishedAt?.getTime() ?? 0;
+  return bd - ad;
+});
+---
+
+<BaseLayout
+  title="Inzichten"
+  description="Korte, technische observaties uit data engineering en cloudoptimalisatie. Geschreven voor de mensen die het werk doen."
+>
+  <section class="mx-auto max-w-7xl px-6 pt-24 pb-16 md:pt-32">
+    <p class="font-mono text-xs uppercase tracking-wider text-accent">Inzichten</p>
+    <h1 class="mt-6 max-w-4xl font-display text-5xl leading-[1.05] tracking-tight md:text-7xl">
+      Korte notities over trage pipelines en snelle beslissingen.
+    </h1>
+    <p class="mt-8 max-w-2xl text-lg leading-relaxed text-ink-muted md:text-xl">
+      Technische observaties uit het werk dat wij dagelijks doen. Geschreven voor de mensen die het systeem daadwerkelijk aanraken, niet voor degenen die een rapportage erover laten maken.
+    </p>
+  </section>
+
+  <section class="border-t border-line/60 bg-bg">
+    {
+      sorted.length === 0 ? (
+        <div class="mx-auto max-w-3xl px-6 py-24 text-center">
+          <p class="font-mono text-xs uppercase tracking-wider text-ink-muted">Nog niets gepubliceerd</p>
+          <p class="mt-4 text-base text-ink-muted">
+            Kom binnenkort terug &mdash; de eerste stukken zijn in concept.
+          </p>
+        </div>
+      ) : (
+        <ul class="mx-auto max-w-7xl divide-y divide-line/60 px-6">
+          {sorted.map((post, index) => (
+            <li>
+              <a
+                href={`/nl/insights/${post.data.slug ?? post.id.replace(/^nl\//, '')}`}
+                class="group/row grid gap-6 py-12 transition-colors focus-visible:outline focus-visible:-outline-offset-4 focus-visible:outline-2 focus-visible:outline-accent md:grid-cols-12 md:gap-8 md:py-16"
+              >
+                <div class="md:col-span-3">
+                  <p class="font-mono text-xs uppercase tracking-wider text-ink-muted">
+                    {String(index + 1).padStart(2, '0')}
+                  </p>
+                  <p class="mt-2 font-mono text-xs uppercase tracking-wider text-ink-muted">
+                    {post.data.publishedAt ? dateFormatter.format(post.data.publishedAt) : ''}
+                  </p>
+                </div>
+
+                <div class="md:col-span-6">
+                  <h2 class="font-display text-2xl leading-tight tracking-tight md:text-4xl">
+                    <span class="transition-colors group-hover/row:text-accent">{post.data.title}</span>
+                  </h2>
+                  <p class="mt-4 max-w-2xl text-base leading-relaxed text-ink-muted md:text-lg">
+                    {post.data.summary}
+                  </p>
+                </div>
+
+                <div class="flex items-end md:col-span-3 md:justify-end">
+                  <span class="flex items-baseline gap-1 font-mono text-xs uppercase tracking-wider text-ink-muted transition-colors group-hover/row:text-accent">
+                    Lezen
+                    <span aria-hidden="true" class="inline-block translate-y-px transition-transform group-hover/row:translate-x-1">→</span>
+                  </span>
+                </div>
+              </a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </section>
+
+  <ClosingCTA />
+</BaseLayout>

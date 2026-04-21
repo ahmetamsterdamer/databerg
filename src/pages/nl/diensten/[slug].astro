@@ -1,0 +1,244 @@
+---
+import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Button from '../../../components/ui/Button.astro';
+import Link from '../../../components/ui/Link.astro';
+import Tag from '../../../components/ui/Tag.astro';
+import { services, getLocalizedService } from '../../../lib/services';
+
+export function getStaticPaths() {
+  return services.map((service) => ({
+    params: { slug: service.slug },
+    props: { slug: service.slug },
+  }));
+}
+
+interface Props {
+  slug: string;
+}
+
+const { slug } = Astro.props;
+const service = getLocalizedService(slug, 'nl');
+if (!service) {
+  throw new Error(`No Dutch service for slug ${slug}`);
+}
+
+const otherServices = services
+  .filter((s) => s.slug !== slug)
+  .map((s) => getLocalizedService(s.slug, 'nl')!)
+  .filter(Boolean);
+
+const relatedCases: CollectionEntry<'work'>[] = await getCollection(
+  'work',
+  (e: CollectionEntry<'work'>) =>
+    !e.data.draft && e.data.locale === 'nl' && (e.data.services ?? []).includes(slug),
+);
+---
+
+<BaseLayout title={service.title} description={service.summary.replace(/&rsquo;/g, "'").replace(/&mdash;/g, '—')}>
+  <article>
+
+    <section class="mx-auto max-w-7xl px-6 pt-24 pb-16 md:pt-32">
+      <div class="flex items-center gap-3 text-sm">
+        <Link href="/nl/diensten">
+          <span aria-hidden="true">←</span>
+          <span>Alle diensten</span>
+        </Link>
+      </div>
+
+      <div class="mt-10 grid gap-8 md:grid-cols-12">
+        <div class="md:col-span-8">
+          <Tag>{service.category}</Tag>
+          <h1 class="mt-6 font-display text-5xl leading-[1.05] tracking-tight md:text-7xl">
+            {service.title}
+          </h1>
+          <p class="mt-8 max-w-2xl text-lg leading-relaxed text-ink-muted md:text-xl">
+            {service.lede}
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="border-t border-line/60 bg-bg">
+      <div class="mx-auto grid max-w-7xl gap-8 px-6 py-20 md:grid-cols-12 md:py-28">
+        <div class="md:col-span-4">
+          <p class="font-mono text-xs uppercase tracking-wider text-accent">01 &middot; Het probleem</p>
+        </div>
+        <div class="md:col-span-8">
+          <p class="font-display text-2xl leading-snug tracking-tight text-ink md:text-3xl">
+            {service.problem}
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="border-t border-line/60 bg-bg">
+      <div class="mx-auto grid max-w-7xl gap-8 px-6 py-20 md:grid-cols-12 md:py-28">
+        <div class="md:col-span-4">
+          <p class="font-mono text-xs uppercase tracking-wider text-accent">02 &middot; Zo pakken wij het aan</p>
+          <p class="mt-4 max-w-xs text-sm text-ink-muted">
+            De volgorde is flexibel; de discipline om met een audit te beginnen is dat niet.
+          </p>
+        </div>
+        <div class="md:col-span-8">
+          <ol class="divide-y divide-line/60 border-y border-line/60">
+            {
+              service.approach.map((step, index) => (
+                <li class="flex gap-6 py-5">
+                  <span class="font-mono text-xs uppercase tracking-wider text-ink-muted">
+                    {String(index + 1).padStart(2, '0')}
+                  </span>
+                  <p class="text-base leading-relaxed text-ink md:text-lg" set:html={step} />
+                </li>
+              ))
+            }
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section class="border-t border-line/60 bg-surface">
+      <div class="mx-auto grid max-w-7xl gap-8 px-6 py-20 md:grid-cols-12 md:py-28">
+        <div class="md:col-span-4">
+          <p class="font-mono text-xs uppercase tracking-wider text-accent">03 &middot; Wat u ervoor terugkrijgt</p>
+        </div>
+        <div class="md:col-span-8">
+          <p class="font-display text-3xl leading-snug tracking-tight text-ink md:text-4xl" set:html={service.outcome} />
+        </div>
+      </div>
+    </section>
+
+    <section class="border-t border-line/60 bg-bg">
+      <div class="mx-auto max-w-7xl px-6 py-20 md:py-28">
+        <div class="grid gap-8 md:grid-cols-12">
+          <div class="md:col-span-4">
+            <p class="font-mono text-xs uppercase tracking-wider text-accent">04 &middot; Vorm van het traject</p>
+            <p class="mt-4 max-w-xs text-sm text-ink-muted">
+              Gebruikelijke waarden. Wij leggen de specifieke scope vast in een geschreven voorstel vóórdat het werk begint.
+            </p>
+          </div>
+          <dl class="grid grid-cols-1 gap-px border border-line bg-line md:col-span-8 md:grid-cols-2">
+            <div class="bg-bg p-6">
+              <dt class="font-mono text-[10px] uppercase tracking-wider text-ink-muted">Duur</dt>
+              <dd class="mt-3 font-display text-lg text-ink" set:html={service.engagement.duration} />
+            </div>
+            <div class="bg-bg p-6">
+              <dt class="font-mono text-[10px] uppercase tracking-wider text-ink-muted">Team</dt>
+              <dd class="mt-3 text-base text-ink" set:html={service.engagement.team} />
+            </div>
+            <div class="bg-bg p-6">
+              <dt class="font-mono text-[10px] uppercase tracking-wider text-ink-muted">Benodigde toegang</dt>
+              <dd class="mt-3 text-base text-ink" set:html={service.engagement.access} />
+            </div>
+            <div class="bg-bg p-6">
+              <dt class="font-mono text-[10px] uppercase tracking-wider text-ink-muted">Wat u behoudt</dt>
+              <dd class="mt-3 text-base text-ink" set:html={service.engagement.keep} />
+            </div>
+          </dl>
+        </div>
+      </div>
+    </section>
+
+    <section class="border-t border-line/60 bg-bg">
+      <div class="mx-auto max-w-7xl px-6 py-20">
+        <div class="grid gap-8 md:grid-cols-12">
+          <div class="md:col-span-4">
+            <Tag>Gerelateerde cases</Tag>
+            <p class="mt-4 max-w-xs text-sm text-ink-muted">
+              Geanonimiseerde cases uit echte trajecten in deze dienst.
+            </p>
+          </div>
+          <div class="md:col-span-8">
+            {
+              relatedCases.length > 0 ? (
+                <ul class="grid grid-cols-1 gap-px border border-line bg-line md:grid-cols-2">
+                  {relatedCases.map((c) => (
+                    <li class="bg-bg">
+                      <a
+                        href={`/nl/cases/${c.data.slug ?? c.id}`}
+                        class="group/card flex h-full flex-col gap-4 p-6 transition-colors hover:bg-surface focus-visible:outline focus-visible:-outline-offset-2 focus-visible:outline-2 focus-visible:outline-accent"
+                      >
+                        <div class="flex flex-wrap gap-2">
+                          <Tag>{c.data.sector}</Tag>
+                          {c.data.location && <Tag>{c.data.location}</Tag>}
+                        </div>
+                        <p class="font-display text-lg leading-tight tracking-tight transition-colors group-hover/card:text-accent md:text-xl">
+                          {c.data.title}
+                        </p>
+                        {c.data.outcomes?.[0] && (
+                          <p class="mt-auto flex items-baseline gap-2 border-t border-line/60 pt-3">
+                            <span
+                              class="font-display text-2xl leading-none tracking-tight text-accent"
+                              set:html={c.data.outcomes[0].metric}
+                            />
+                            <span class="font-mono text-[10px] uppercase tracking-wider text-ink-muted">
+                              {c.data.outcomes[0].note}
+                            </span>
+                          </p>
+                        )}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div>
+                  <p class="text-base leading-relaxed text-ink-muted md:text-lg">
+                    Wij publiceren cases zodra klanten daarvoor toestemming geven. Voor deze dienst is er nog geen gepubliceerde case. Vertel ons in het gesprek waar u tegenaan loopt, dan delen wij wat relevant is.
+                  </p>
+                  <div class="mt-6">
+                    <Link href="/nl/contact" variant="arrow">Plan een gesprek</Link>
+                  </div>
+                </div>
+              )
+            }
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="border-t border-line/60 bg-surface">
+      <div class="mx-auto max-w-5xl px-6 py-24 text-center md:py-32">
+        <p class="font-mono text-xs uppercase tracking-wider text-accent">Wij staan klaar</p>
+        <h2 class="mt-6 font-display text-4xl leading-tight tracking-tight md:text-6xl">
+          Een gesprek van 30 minuten. Geen slides.
+        </h2>
+        <p class="mt-6 text-lg leading-relaxed text-ink-muted">
+          Vertel ons wat duur, traag of onduidelijk is. Wij zeggen eerlijk of we de juiste match zijn.
+        </p>
+        <div class="mt-10 flex justify-center">
+          <Button href="/nl/contact" size="lg">Plan een gesprek</Button>
+        </div>
+      </div>
+    </section>
+
+    <section class="border-t border-line/60 bg-bg">
+      <div class="mx-auto max-w-7xl px-6 py-16">
+        <p class="font-mono text-xs uppercase tracking-wider text-ink-muted">Andere diensten</p>
+        <ul class="mt-8 grid grid-cols-1 gap-px border border-line bg-line md:grid-cols-3">
+          {
+            otherServices.map((s) => (
+              <li class="bg-bg">
+                <a
+                  href={`/nl/diensten/${s.slug}`}
+                  class="group/card flex h-full flex-col justify-between gap-6 p-6 transition-colors hover:bg-surface focus-visible:outline focus-visible:-outline-offset-2 focus-visible:outline-2 focus-visible:outline-accent"
+                >
+                  <div>
+                    <Tag>{s.category}</Tag>
+                    <h3 class="mt-4 font-display text-xl leading-tight tracking-tight">
+                      {s.title}
+                    </h3>
+                  </div>
+                  <span class="flex items-baseline gap-1 font-mono text-xs uppercase tracking-wider text-ink-muted transition-colors group-hover/card:text-accent">
+                    Lees details
+                    <span aria-hidden="true" class="inline-block translate-y-px transition-transform group-hover/card:translate-x-1">→</span>
+                  </span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
+  </article>
+</BaseLayout>

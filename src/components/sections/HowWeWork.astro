@@ -1,0 +1,39 @@
+---
+import { getLocaleFromPath, t } from '../../lib/i18n';
+
+const locale = getLocaleFromPath(Astro.url.pathname);
+
+const steps = [
+  { number: '01', titleKey: 'howStep1Title' as const, bodyKey: 'howStep1Body' as const },
+  { number: '02', titleKey: 'howStep2Title' as const, bodyKey: 'howStep2Body' as const },
+  { number: '03', titleKey: 'howStep3Title' as const, bodyKey: 'howStep3Body' as const },
+];
+---
+
+<section class="border-t border-line/60 bg-bg">
+  <div class="mx-auto max-w-7xl px-6 py-24 md:py-32">
+    <div class="max-w-3xl">
+      <p class="font-mono text-xs uppercase tracking-wider text-ink-muted">{t(locale, 'howEyebrow')}</p>
+      <h2 class="mt-4 font-display text-3xl leading-tight tracking-tight md:text-5xl">
+        {t(locale, 'howTitle')}
+      </h2>
+      <p class="mt-6 max-w-2xl text-lg leading-relaxed text-ink-muted">
+        {t(locale, 'howLede')}
+      </p>
+    </div>
+
+    <ol class="mt-16 grid grid-cols-1 gap-12 md:mt-24 md:grid-cols-3 md:gap-8">
+      {
+        steps.map((step) => (
+          <li class="flex flex-col gap-4 border-t border-line/60 pt-8">
+            <p class="font-mono text-xs uppercase tracking-wider text-accent">{step.number}</p>
+            <h3 class="font-display text-2xl leading-tight tracking-tight md:text-3xl">
+              {t(locale, step.titleKey)}
+            </h3>
+            <p class="text-base leading-relaxed text-ink-muted">{t(locale, step.bodyKey)}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>

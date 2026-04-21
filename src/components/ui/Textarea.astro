@@ -1,0 +1,52 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+interface Props extends Omit<HTMLAttributes<'textarea'>, 'class'> {
+  id: string;
+  label: string;
+  hint?: string;
+  rows?: number;
+  class?: string;
+  wrapperClass?: string;
+}
+
+const {
+  id,
+  name = id,
+  label,
+  required = false,
+  hint,
+  rows = 5,
+  class: className = '',
+  wrapperClass = '',
+  ...rest
+} = Astro.props;
+
+const hintId = hint ? `${id}-hint` : undefined;
+---
+
+<div class={`flex flex-col gap-2 ${wrapperClass}`}>
+  <label for={id} class="font-mono text-xs uppercase tracking-wider text-ink-muted">
+    {label}
+    {required && <span aria-hidden="true" class="text-accent"> *</span>}
+  </label>
+  <textarea
+    id={id}
+    name={name}
+    rows={rows}
+    required={required}
+    aria-describedby={hintId}
+    class={[
+      'border border-line bg-surface px-4 py-3 text-sm text-ink',
+      'placeholder:text-ink-muted',
+      'focus-visible:border-accent focus-visible:outline-none',
+      'disabled:cursor-not-allowed disabled:opacity-50',
+      'resize-y transition-colors',
+      className,
+    ]
+      .filter(Boolean)
+      .join(' ')}
+    {...rest}
+  />
+  {hint && <p id={hintId} class="text-xs text-ink-muted">{hint}</p>}
+</div>

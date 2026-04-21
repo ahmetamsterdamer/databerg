@@ -1,0 +1,304 @@
+---
+// TODO(copy): voice currently 3rd-person about Ahmet ("he"/"him") so the rest-of-site "we"
+// stays consistent. Flip to 1st-person ("I") if a warmer tone is preferred.
+// TODO(copy): operating principles below are drafted; user to confirm they match how the
+// practice actually operates (or edit). Banned words scanned — clear.
+// TODO(copy): add a photo when available; <img> slot already positioned in the intro block.
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Button from '../components/ui/Button.astro';
+import Link from '../components/ui/Link.astro';
+
+interface Engagement {
+  years: string;
+  sector: string;
+  summary: string;
+  caseSlug?: string;
+}
+
+const engagements: Engagement[] = [
+  {
+    years: '2023 — now',
+    sector: 'Dutch health insurer',
+    summary:
+      'Analytical reporting on Azure Synapse. T-SQL tuning, pipeline automation, SLA dashboards. Ongoing engagement.',
+    caseSlug: 'health-insurer-analytics',
+  },
+  {
+    years: '2022 — 2023',
+    sector: 'Global IT consulting partner',
+    summary:
+      'Legacy SSIS ETL retired. Migration to ADF + Databricks, with CI/CD-managed SQL deployments.',
+    caseSlug: 'consulting-ssis-migration',
+  },
+  {
+    years: '2019 — 2022',
+    sector: 'EMEA retail banking group',
+    summary:
+      'Billion-row fact-table query performance, reusable T-SQL libraries, junior engineer mentorship on indexing and partitioning.',
+    caseSlug: 'banking-query-performance',
+  },
+];
+
+interface Principle {
+  number: string;
+  title: string;
+  body: string;
+}
+
+const principles: Principle[] = [
+  {
+    number: '01',
+    title: 'Scope is written, or it does not exist.',
+    body: 'Every engagement starts with a short written plan the client can restate in one paragraph. If we cannot agree on the paragraph, the engagement does not start.',
+  },
+  {
+    number: '02',
+    title: 'No retainer, no lock-in.',
+    body: 'Every engagement has a clear start, a clear end, and a written handover. The client owns the output &mdash; the code, the documentation, the reasoning. We leave. The work stays.',
+  },
+  {
+    number: '03',
+    title: 'The team keeps the learning.',
+    body: 'Mentorship is part of the engagement, not an add-on. The practices we introduce &mdash; query tuning, indexing strategy, runbook discipline &mdash; are meant to outlast the contract.',
+  },
+  {
+    number: '04',
+    title: 'Honest numbers, honest scope.',
+    body: 'If we are not the right fit, we say so on the call. If a project risks going sideways mid-flight, we name it the week we see it. The relationship is longer than the engagement.',
+  },
+  {
+    number: '05',
+    title: 'Documentation is the job.',
+    body: 'Code without a runbook is a tomorrow-problem. Every engagement ships with the page that explains it &mdash; enough that a new team member can pick it up without a meeting.',
+  },
+];
+
+const education = [
+  {
+    degree: 'B.Sc. Computer Engineering',
+    institution: 'Vrije Universiteit Amsterdam',
+  },
+  {
+    degree: 'B.Sc. Operations Research',
+    institution: 'Middle East Technical University',
+  },
+];
+
+const certifications = [
+  {
+    name: 'Microsoft Certified: Azure Data Engineer Associate (DP-203)',
+    year: '2023',
+  },
+  {
+    name: 'Microsoft Azure Fundamentals (AZ-900)',
+    year: '2022',
+  },
+  {
+    name: 'Microsoft Fabric (AZ-700)',
+    year: '2025',
+  },
+];
+---
+
+<BaseLayout
+  title="About"
+  description="databerganalytics is a practice of one. Ahmet Karabaş — Azure Data Engineer, Amsterdam. Four years of SQL tuning, pipeline work, and the slow craft of making data teams faster."
+>
+  <article>
+
+    <!-- Hero -->
+    <section class="mx-auto max-w-7xl px-6 pt-24 pb-16 md:pt-32">
+      <p class="font-mono text-xs uppercase tracking-wider text-accent">About</p>
+      <h1 class="mt-6 max-w-5xl font-display text-5xl leading-[1.05] tracking-tight md:text-7xl lg:text-8xl">
+        databerganalytics is a practice of one. That is on purpose.
+      </h1>
+      <p class="mt-8 max-w-2xl text-lg leading-relaxed text-ink-muted md:text-xl">
+        Everything you read on this site, you talk to on the call. No account manager, no handoff to a junior, no &ldquo;let me bring in my colleague for the technical part.&rdquo;
+      </p>
+    </section>
+
+    <!-- Bio -->
+    <section class="border-t border-line/60 bg-bg">
+      <div class="mx-auto grid max-w-7xl gap-12 px-6 py-20 md:grid-cols-12 md:py-28">
+        <div class="md:col-span-4">
+          <p class="font-mono text-xs uppercase tracking-wider text-accent">01 &middot; Who</p>
+          <!-- TODO(copy): drop a real photo in /public/images/ahmet.jpg, then replace
+               the <div aria-hidden> placeholder below with a next/image Image component. -->
+          <div
+            aria-hidden="true"
+            class="mt-6 aspect-[3/4] max-w-xs border border-line bg-surface"
+          >
+            <div class="flex h-full items-center justify-center">
+              <span class="font-mono text-[10px] uppercase tracking-wider text-ink-muted">
+                photo &middot; pending
+              </span>
+            </div>
+          </div>
+          <p class="mt-6 font-display text-2xl leading-tight tracking-tight">Ahmet Karaba&scedil;</p>
+          <p class="mt-1 text-sm text-ink-muted">Azure Data Engineer &middot; Amsterdam</p>
+        </div>
+
+        <div class="space-y-6 md:col-span-8">
+          <p class="text-lg leading-relaxed text-ink md:text-xl">
+            Four years on three engagements that all rhymed: a data warehouse was slow, a pipeline was brittle, a team was spending their week on manual work.
+          </p>
+          <p class="text-base leading-relaxed text-ink-muted md:text-lg">
+            In all three, the fix was less glamorous than the pitch deck would suggest &mdash; more SQL tuning, less rearchitecture. Indexing decisions that had been deferred for years. Stored procedures that replaced fragile scripts. Reusable libraries that collapsed four copies of the same logic into one. The work got done, the numbers came down, and the team kept the practice after we left.
+          </p>
+          <p class="text-base leading-relaxed text-ink-muted md:text-lg">
+            The practice is built around that observation. Most business-and-tech optimization problems do not need a new platform or a new vendor. They need someone willing to sit with the existing system long enough to see what is actually dragging &mdash; and to write down the fix so the next person on the team can keep it that way.
+          </p>
+          <p class="text-base leading-relaxed text-ink-muted md:text-lg">
+            Before software: Operations Research at METU and Computer Engineering at VU Amsterdam. A volunteer shift with the Salvation Army in Amsterdam &mdash; data-adjacent work, same principle: remove the bottleneck, keep the goal in sight.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Experience timeline -->
+    <section class="border-t border-line/60 bg-bg">
+      <div class="mx-auto grid max-w-7xl gap-8 px-6 py-20 md:grid-cols-12 md:py-28">
+        <div class="md:col-span-4">
+          <p class="font-mono text-xs uppercase tracking-wider text-accent">02 &middot; Where</p>
+          <p class="mt-4 max-w-xs text-sm text-ink-muted">
+            Three engagements, anonymised at the client&rsquo;s request. The work itself is published in <Link href="/work">Work</Link>.
+          </p>
+        </div>
+        <ol class="md:col-span-8">
+          {
+            engagements.map((eng) => (
+              <li class="border-t border-line/60 py-8 first:border-t-0 first:pt-0">
+                <div class="grid gap-4 md:grid-cols-12 md:items-baseline md:gap-8">
+                  <div class="md:col-span-3">
+                    <p class="font-mono text-xs uppercase tracking-wider text-ink-muted">
+                      {eng.years}
+                    </p>
+                  </div>
+                  <div class="md:col-span-9">
+                    <p class="font-display text-xl leading-tight tracking-tight text-ink md:text-2xl">
+                      {eng.sector}
+                    </p>
+                    <p class="mt-3 text-base leading-relaxed text-ink-muted">{eng.summary}</p>
+                    {eng.caseSlug && (
+                      <p class="mt-4">
+                        <Link href={`/work/${eng.caseSlug}`} variant="arrow" class="text-sm">
+                          Read case
+                        </Link>
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </section>
+
+    <!-- Operating principles -->
+    <section class="border-t border-line/60 bg-surface">
+      <div class="mx-auto max-w-7xl px-6 py-20 md:py-28">
+        <div class="grid gap-8 md:grid-cols-12">
+          <div class="md:col-span-4">
+            <p class="font-mono text-xs uppercase tracking-wider text-accent">03 &middot; How</p>
+            <h2 class="mt-6 font-display text-3xl leading-tight tracking-tight md:text-4xl">
+              Five principles. Non-negotiable.
+            </h2>
+            <p class="mt-6 max-w-xs text-sm leading-relaxed text-ink-muted">
+              These are what the engagement is built on. If any of them are uncomfortable, we are probably not the right fit, and that is fine to find out on the call.
+            </p>
+          </div>
+          <ol class="divide-y divide-line/60 border-y border-line/60 md:col-span-8">
+            {
+              principles.map((p) => (
+                <li class="grid gap-4 py-8 md:grid-cols-12 md:items-baseline md:gap-8">
+                  <span class="font-mono text-xs uppercase tracking-wider text-accent md:col-span-2">
+                    {p.number}
+                  </span>
+                  <div class="md:col-span-10">
+                    <h3 class="font-display text-xl leading-tight tracking-tight text-ink md:text-2xl">
+                      {p.title}
+                    </h3>
+                    <p class="mt-3 text-base leading-relaxed text-ink-muted" set:html={p.body} />
+                  </div>
+                </li>
+              ))
+            }
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- Credentials -->
+    <section class="border-t border-line/60 bg-bg">
+      <div class="mx-auto max-w-7xl px-6 py-20 md:py-28">
+        <div class="grid gap-8 md:grid-cols-12">
+          <div class="md:col-span-4">
+            <p class="font-mono text-xs uppercase tracking-wider text-accent">04 &middot; Credentials</p>
+          </div>
+          <div class="grid gap-px border border-line bg-line md:col-span-8 md:grid-cols-2">
+            <div class="bg-bg p-6 md:p-8">
+              <p class="font-mono text-[10px] uppercase tracking-wider text-ink-muted">Education</p>
+              <ul class="mt-6 space-y-6">
+                {
+                  education.map((e) => (
+                    <li>
+                      <p class="font-display text-base text-ink md:text-lg">{e.degree}</p>
+                      <p class="mt-1 text-sm text-ink-muted">{e.institution}</p>
+                    </li>
+                  ))
+                }
+              </ul>
+            </div>
+            <div class="bg-bg p-6 md:p-8">
+              <p class="font-mono text-[10px] uppercase tracking-wider text-ink-muted">Certifications</p>
+              <ul class="mt-6 space-y-6">
+                {
+                  certifications.map((c) => (
+                    <li>
+                      <p class="font-display text-base text-ink md:text-lg">{c.name}</p>
+                      <p class="mt-1 font-mono text-xs uppercase tracking-wider text-ink-muted">{c.year}</p>
+                    </li>
+                  ))
+                }
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Volunteer (small) -->
+    <section class="border-t border-line/60 bg-bg">
+      <div class="mx-auto max-w-7xl px-6 py-12">
+        <div class="grid gap-4 md:grid-cols-12 md:items-baseline">
+          <div class="md:col-span-4">
+            <p class="font-mono text-xs uppercase tracking-wider text-accent">05 &middot; Outside work</p>
+          </div>
+          <div class="md:col-span-8">
+            <p class="text-base leading-relaxed text-ink-muted md:text-lg">
+              Volunteer Manager with the Salvation Army in Amsterdam (Leger des Heils). Coordinating volunteer teams and logistics; introduced structured reporting to a shift that had none. Same principle as the day job: remove the bottleneck, keep the goal in sight.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Closing CTA -->
+    <section class="border-t border-line/60 bg-surface">
+      <div class="mx-auto max-w-5xl px-6 py-24 text-center md:py-32">
+        <p class="font-mono text-xs uppercase tracking-wider text-accent">Ready when you are</p>
+        <h2 class="mt-6 font-display text-4xl leading-tight tracking-tight md:text-6xl">
+          A 30-minute call. No slides.
+        </h2>
+        <p class="mt-6 text-lg leading-relaxed text-ink-muted">
+          Tell us what is expensive, slow, or confusing. We will tell you honestly whether we are the right fit.
+        </p>
+        <div class="mt-10 flex justify-center">
+          <Button href="/contact" size="lg">Book a call</Button>
+        </div>
+      </div>
+    </section>
+  </article>
+</BaseLayout>

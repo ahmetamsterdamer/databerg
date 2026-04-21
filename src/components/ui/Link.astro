@@ -1,0 +1,51 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+type LinkVariant = 'inline' | 'arrow' | 'external';
+
+interface Props extends Omit<HTMLAttributes<'a'>, 'class'> {
+  href: string;
+  variant?: LinkVariant;
+  class?: string;
+}
+
+const { href, variant = 'inline', class: className = '', ...rest } = Astro.props;
+
+const isExternal = variant === 'external';
+const linkExtras = isExternal
+  ? { target: '_blank', rel: 'noopener noreferrer' }
+  : {};
+
+const base = [
+  'inline-flex items-baseline gap-1 transition-colors',
+  'hover:text-accent',
+  'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent',
+].join(' ');
+
+const variantClasses: Record<LinkVariant, string> = {
+  inline: 'underline decoration-accent decoration-2 underline-offset-4',
+  arrow: 'group/link font-medium',
+  external: 'underline decoration-accent decoration-2 underline-offset-4',
+};
+
+const classes = [base, variantClasses[variant], className].filter(Boolean).join(' ');
+---
+
+<a href={href} class={classes} {...linkExtras} {...rest}>
+  <slot />
+  {
+    variant === 'arrow' && (
+      <span
+        aria-hidden="true"
+        class="inline-block translate-y-px transition-transform group-hover/link:translate-x-1"
+      >
+        →
+      </span>
+    )
+  }
+  {
+    variant === 'external' && (
+      <span aria-hidden="true" class="inline-block translate-y-px text-ink-muted">↗</span>
+    )
+  }
+</a>

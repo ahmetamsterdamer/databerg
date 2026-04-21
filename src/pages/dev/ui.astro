@@ -1,0 +1,164 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Button from '../../components/ui/Button.astro';
+import Link from '../../components/ui/Link.astro';
+import Input from '../../components/ui/Input.astro';
+import Textarea from '../../components/ui/Textarea.astro';
+import Select from '../../components/ui/Select.astro';
+import Tag from '../../components/ui/Tag.astro';
+
+const tokens = [
+  { name: '--color-bg', utility: 'bg-bg' },
+  { name: '--color-surface', utility: 'bg-surface' },
+  { name: '--color-ink', utility: 'bg-ink' },
+  { name: '--color-ink-muted', utility: 'bg-ink-muted' },
+  { name: '--color-accent', utility: 'bg-accent' },
+  { name: '--color-accent-ink', utility: 'bg-accent-ink' },
+  { name: '--color-line', utility: 'bg-line' },
+];
+---
+
+<BaseLayout title="UI primitives (dev only)" noIndex={true}>
+  <section class="mx-auto max-w-5xl px-6 py-16">
+    <p class="font-mono text-xs uppercase tracking-wider text-accent">/dev/ui</p>
+    <h1 class="mt-4 font-display text-3xl tracking-tight md:text-5xl">Primitives & tokens</h1>
+    <p class="mt-4 max-w-2xl text-ink-muted">
+      Dev-only visual QA surface. Not linked from nav, <code class="font-mono text-xs">noindex</code> in head. Remove this page and the <code class="font-mono text-xs">src/pages/dev/</code> folder before launch.
+    </p>
+
+    <div class="mt-16 grid gap-24">
+      <!-- BUTTONS -->
+      <section aria-labelledby="h-buttons">
+        <h2 id="h-buttons" class="font-display text-xl tracking-tight">Button</h2>
+        <p class="mt-1 text-sm text-ink-muted">Variants × sizes. Renders <code class="font-mono text-xs">&lt;a&gt;</code> when <code class="font-mono text-xs">href</code> is set, otherwise <code class="font-mono text-xs">&lt;button&gt;</code>.</p>
+
+        <div class="mt-6 grid grid-cols-1 gap-8 md:grid-cols-3">
+          <div>
+            <Tag>Primary</Tag>
+            <div class="mt-3 flex flex-col items-start gap-2">
+              <Button size="sm">Book a call</Button>
+              <Button size="md">Book a call</Button>
+              <Button size="lg">Book a call</Button>
+              <Button size="md" disabled>Disabled</Button>
+            </div>
+          </div>
+          <div>
+            <Tag>Secondary</Tag>
+            <div class="mt-3 flex flex-col items-start gap-2">
+              <Button variant="secondary" size="sm">See our work</Button>
+              <Button variant="secondary" size="md">See our work</Button>
+              <Button variant="secondary" size="lg">See our work</Button>
+              <Button variant="secondary" size="md" disabled>Disabled</Button>
+            </div>
+          </div>
+          <div>
+            <Tag>Ghost</Tag>
+            <div class="mt-3 flex flex-col items-start gap-2">
+              <Button variant="ghost" size="sm">Learn more</Button>
+              <Button variant="ghost" size="md">Learn more</Button>
+              <Button variant="ghost" size="lg">Learn more</Button>
+              <Button variant="ghost" size="md" disabled>Disabled</Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- LINKS -->
+      <section aria-labelledby="h-links">
+        <h2 id="h-links" class="font-display text-xl tracking-tight">Link</h2>
+        <p class="mt-1 text-sm text-ink-muted">Inline within prose, arrow for wayfinding, external for off-site.</p>
+
+        <div class="mt-6 flex flex-col items-start gap-4">
+          <p class="text-ink-muted">
+            Body text with an <Link href="/work">inline link</Link> flowing mid-sentence.
+          </p>
+          <Link href="/services" variant="arrow">See all services</Link>
+          <Link href="https://vercel.com/font" variant="external">Geist font source</Link>
+        </div>
+      </section>
+
+      <!-- FORM FIELDS -->
+      <section aria-labelledby="h-fields">
+        <h2 id="h-fields" class="font-display text-xl tracking-tight">Form fields</h2>
+        <p class="mt-1 text-sm text-ink-muted">Real <code class="font-mono text-xs">&lt;label&gt;</code> on every field, hint slot for secondary guidance.</p>
+
+        <form class="mt-6 grid max-w-lg gap-6">
+          <Input id="qa-name" label="Name" placeholder="Jane Engineer" required />
+          <Input id="qa-email" label="Email" type="email" placeholder="you@company.com" hint="We only email about your request." required />
+          <Select id="qa-scenario" label="Optimization scenario" required>
+            <option value="">Select one</option>
+            <option value="cloud-cost">Cloud cost</option>
+            <option value="process-time">Process time</option>
+            <option value="data-quality">Data quality</option>
+          </Select>
+          <Textarea id="qa-context" label="Context" rows={4} placeholder="Tell us what's dragging." hint="A few sentences is enough." />
+          <Input id="qa-disabled" label="Disabled field" value="Locked for now" disabled />
+          <div class="flex gap-3">
+            <Button type="submit">Send</Button>
+            <Button type="reset" variant="ghost">Reset</Button>
+          </div>
+        </form>
+      </section>
+
+      <!-- TAGS -->
+      <section aria-labelledby="h-tags">
+        <h2 id="h-tags" class="font-display text-xl tracking-tight">Tag</h2>
+        <p class="mt-1 text-sm text-ink-muted">Small category / filter marker. Mono, uppercase, tight tracking.</p>
+
+        <div class="mt-6 flex flex-wrap gap-2">
+          <Tag>Cloud</Tag>
+          <Tag>Data</Tag>
+          <Tag>Process</Tag>
+          <Tag variant="accent">Featured</Tag>
+        </div>
+      </section>
+
+      <!-- TOKENS -->
+      <section aria-labelledby="h-tokens">
+        <h2 id="h-tokens" class="font-display text-xl tracking-tight">Color tokens</h2>
+        <p class="mt-1 text-sm text-ink-muted">The seven CSS variables that every component must consume via Tailwind utilities.</p>
+
+        <div class="mt-6 grid grid-cols-2 gap-4 md:grid-cols-4">
+          {
+            tokens.map((t) => (
+              <div class="border border-line">
+                <div class={`${t.utility} h-16 border-b border-line`} />
+                <div class="px-3 py-2 font-mono text-[10px] uppercase tracking-wider text-ink-muted">
+                  <p class="text-ink">{t.utility}</p>
+                  <p class="mt-1">{t.name}</p>
+                </div>
+              </div>
+            ))
+          }
+        </div>
+      </section>
+
+      <!-- TYPOGRAPHY -->
+      <section aria-labelledby="h-type">
+        <h2 id="h-type" class="font-display text-xl tracking-tight">Typography</h2>
+        <p class="mt-1 text-sm text-ink-muted">Geist (display + body) and Geist Mono (numbers + code).</p>
+
+        <div class="mt-6 grid gap-6">
+          <div>
+            <Tag>font-display · 6xl / 500</Tag>
+            <p class="mt-2 font-display text-6xl leading-none tracking-tight">databerganalytics</p>
+          </div>
+          <div>
+            <Tag>font-display · 3xl / 500</Tag>
+            <p class="mt-2 font-display text-3xl leading-tight tracking-tight">We find the drag in your operations.</p>
+          </div>
+          <div>
+            <Tag>body · base</Tag>
+            <p class="mt-2 max-w-2xl text-base text-ink-muted">
+              Slow processes, expensive cloud bills, siloed data, manual work that shouldn&rsquo;t be manual &mdash; we find the drag and remove it.
+            </p>
+          </div>
+          <div>
+            <Tag>font-mono · xs</Tag>
+            <p class="mt-2 font-mono text-xs uppercase tracking-wider text-ink-muted">process_time · 42m &rarr; 6m · &minus;86%</p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </section>
+</BaseLayout>
