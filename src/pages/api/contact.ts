@@ -15,7 +15,15 @@ const json = (body: ResponseBody, status: number): Response =>
 
 const EMAIL_RE = /^\S+@\S+\.\S+$/;
 
-export const POST: APIRoute = async ({ request }) => {
+// Cloudflare Workers expose runtime secrets via `locals.runtime.env`, not
+// `import.meta.env`. Read from the runtime first, fall back to build-time
+// (dev mode / PUBLIC_* keys) so the same code path works on `astro dev`.
+function readEnv(locals: App.Locals, key: string): string | undefined {
+  const runtimeEnv = (locals as { runtime?: { env?: Record<string, string | undefined> } }).runtime?.env;
+  return runtimeEnv?.[key] ?? (import.meta.env as Record<string, string | undefined>)[key];
+}
+
+export const POST: APIRoute = async ({ request, locals }) => {
   try {
     const formData = await request.formData();
     const name = String(formData.get('name') ?? '').trim();
@@ -42,7 +50,7 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     // Turnstile verification — only runs if server-side key is configured.
-    const turnstileSecret = import.meta.env.TURNSTILE_SECRET_KEY;
+    const turnstileSecret = readEnv(locals, 'TURNSTILE_SECRET_KEY');
     if (turnstileSecret) {
       if (!turnstileToken) {
         return json({ ok: false, error: 'Verification token missing. Reload and try again.' }, 400);
@@ -61,7 +69,7 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     // Resend send
-    const resendKey = import.meta.env.RESEND_API_KEY;
+    const resendKey = readEnv(locals, 'RESEND_API_KEY');
     if (!resendKey) {
       console.warn('[contact] RESEND_API_KEY is not set — form submission is not being emailed.');
       return json(
@@ -70,8 +78,8 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
-    const to = import.meta.env.CONTACT_TO_EMAIL ?? 'ahmetkarabasdtengineer@gmail.com';
-    const from = import.meta.env.CONTACT_FROM_EMAIL ?? 'onboarding@resend.dev';
+    const to = readEnv(locals, 'CONTACT_TO_EMAIL') ?? 'ahmetkarabasdtengineer@gmail.com';
+    const from = readEnv(locals, 'CONTACT_FROM_EMAIL') ?? 'onboarding@resend.dev';
     const subjectOrg = organization ? ` (${organization})` : '';
     const textBody = [
       `From: ${name} <${email}>`,
