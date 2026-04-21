@@ -133,3 +133,13 @@ Before Phase 15 launch, run axe DevTools manually in Chrome against these pages 
 5. One detail page each: `/services/cloud-cost`, `/work/health-insurer-analytics`, `/insights/why-analytical-reports-got-slow`
 
 If a violation appears, reopen Phase 14 for the fix and re-record scores above.
+
+## OG images — 2026-04-21 — Phase 14
+
+- Pipeline: `scripts/build-og.mjs` runs before every `astro build` via `pnpm build`.
+- Renderer: `satori` (JSX-like object → SVG) + `@resvg/resvg-js` (SVG → PNG).
+- Fonts: Geist / Geist Medium / Geist Mono OTFs committed in `scripts/og/fonts/` (SIL OFL).
+- Output: 33 × 1200×630 PNG, one per route — `public/og/<slug>.png`. PNGs are gitignored; Cloudflare regenerates on every build.
+- Meta wiring: `BaseLayout.astro` derives the correct URL via `ogImageForPath()` in `src/lib/seo.ts`. Pages can override with the `ogImage` prop if needed.
+- To preview the cards locally: `pnpm build:og` then open a PNG from `public/og/`.
+- To verify a live URL's card: paste the page URL into the [Open Graph debugger](https://www.opengraph.xyz/) or Twitter's [Card Validator](https://cards-dev.twitter.com/validator).

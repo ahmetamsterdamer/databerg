@@ -3,7 +3,7 @@ import '../styles/global.css';
 import Nav from '../components/layout/Nav.astro';
 import Footer from '../components/layout/Footer.astro';
 import { alternateLocaleUrl, getLocaleFromPath, t } from '../lib/i18n';
-import { organizationJsonLd } from '../lib/seo';
+import { organizationJsonLd, ogImageForPath } from '../lib/seo';
 
 interface Props {
   title?: string;
@@ -42,7 +42,7 @@ const defaults = {
 const resolvedTitle = title ? `${title} — databerganalytics` : defaults[locale].title;
 const resolvedDescription = description ?? defaults[locale].description;
 const resolvedCanonical = canonical ?? (siteUrl ? siteUrl + pathname : pathname);
-const resolvedOgImage = ogImage ?? (siteUrl ? `${siteUrl}/og/default.png` : undefined);
+const resolvedOgImage = ogImage ?? (siteUrl ? `${siteUrl}${ogImageForPath(pathname)}` : undefined);
 const altFull = siteUrl ? siteUrl + altHref : altHref;
 const otherLocale = locale === 'en' ? 'nl' : 'en';
 ---

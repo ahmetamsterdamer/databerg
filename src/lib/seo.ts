@@ -19,6 +19,17 @@ export function absoluteUrl(pathname: string): string {
   return `${SITE_URL}${p}`;
 }
 
+/**
+ * Map a URL pathname to its generated OG image.
+ * Keep in sync with `scripts/build-og.mjs`'s `pages[].slug` names.
+ */
+export function ogImageForPath(pathname: string): string {
+  const clean = pathname.replace(/^\/+|\/+$/g, '');
+  if (clean === '') return '/og/home.png';
+  if (clean === 'nl') return '/og/nl-home.png';
+  return `/og/${clean.replace(/\//g, '-')}.png`;
+}
+
 export function organizationJsonLd() {
   return {
     '@context': 'https://schema.org',
