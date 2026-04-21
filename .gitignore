@@ -18,3 +18,8 @@ pnpm-debug.log*
 # Source of truth for content is in src/content/ + the pages[] list in the
 # generator. Do not commit the PNGs.
 public/og/*.png
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example

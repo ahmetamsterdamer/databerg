@@ -10,9 +10,7 @@ export default defineConfig({
   // Most pages stay static; server routes opt-in via `export const prerender = false`.
   // The Cloudflare adapter enables hybrid rendering on CF Pages (deploy target).
   output: 'static',
-  adapter: cloudflare({
-    imageService: 'compile',
-  }),
+  adapter: cloudflare(),
   i18n: {
     defaultLocale: 'en',
     locales: ['en', 'nl'],
