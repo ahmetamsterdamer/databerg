@@ -3,6 +3,7 @@ import '../styles/global.css';
 import Nav from '../components/layout/Nav.astro';
 import Footer from '../components/layout/Footer.astro';
 import { alternateLocaleUrl, getLocaleFromPath, t } from '../lib/i18n';
+import { organizationJsonLd } from '../lib/seo';
 
 interface Props {
   title?: string;
@@ -80,6 +81,16 @@ const otherLocale = locale === 'en' ? 'nl' : 'en';
     <link rel="preload" as="font" type="font/woff2" href="/fonts/GeistMono-Regular.woff2" crossorigin />
 
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+    {
+      !noIndex && (
+        <script
+          type="application/ld+json"
+          is:inline
+          set:html={JSON.stringify(organizationJsonLd())}
+        />
+      )
+    }
 
     <slot name="head" />
   </head>

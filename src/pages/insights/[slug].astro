@@ -4,6 +4,7 @@ import type { CollectionEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Button from '../../components/ui/Button.astro';
 import Link from '../../components/ui/Link.astro';
+import { articleJsonLd, breadcrumbJsonLd, absoluteUrl } from '../../lib/seo';
 
 export async function getStaticPaths() {
   const entries: CollectionEntry<'posts'>[] = await getCollection(
@@ -35,9 +36,35 @@ const allEntries: CollectionEntry<'posts'>[] = await getCollection(
   (e: CollectionEntry<'posts'>) => !e.data.draft && e.data.locale === 'en',
 );
 const otherEntries = allEntries.filter((e: CollectionEntry<'posts'>) => e.id !== entry.id).slice(0, 2);
+
+const pageUrl = absoluteUrl(`/insights/${data.slug ?? entry.id}/`);
+const article = articleJsonLd({
+  title: data.title,
+  description: data.summary,
+  publishedAt: data.publishedAt,
+  url: pageUrl,
+  locale: 'en',
+});
+const breadcrumbs = breadcrumbJsonLd([
+  { name: 'Home', url: absoluteUrl('/') },
+  { name: 'Insights', url: absoluteUrl('/insights/') },
+  { name: data.title, url: pageUrl },
+]);
 ---
 
 <BaseLayout title={data.title} description={data.summary}>
+  <Fragment slot="head">
+    <script
+      type="application/ld+json"
+      is:inline
+      set:html={JSON.stringify(article)}
+    />
+    <script
+      type="application/ld+json"
+      is:inline
+      set:html={JSON.stringify(breadcrumbs)}
+    />
+  </Fragment>
   <article>
 
     <!-- Breadcrumb -->

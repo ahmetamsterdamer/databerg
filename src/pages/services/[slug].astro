@@ -6,6 +6,7 @@ import Button from '../../components/ui/Button.astro';
 import Link from '../../components/ui/Link.astro';
 import Tag from '../../components/ui/Tag.astro';
 import { services, type Service } from '../../lib/services';
+import { serviceJsonLd, breadcrumbJsonLd, absoluteUrl } from '../../lib/seo';
 
 export function getStaticPaths() {
   return services.map((service) => ({
@@ -26,9 +27,35 @@ const relatedCases: CollectionEntry<'work'>[] = await getCollection(
   (e: CollectionEntry<'work'>) =>
     !e.data.draft && e.data.locale === 'en' && (e.data.services ?? []).includes(service.slug),
 );
+
+const cleanSummary = service.summary.replace(/&rsquo;/g, "'").replace(/&mdash;/g, '—');
+const pageUrl = absoluteUrl(`/services/${service.slug}/`);
+const serviceLd = serviceJsonLd({
+  name: service.title,
+  description: cleanSummary,
+  url: pageUrl,
+  locale: 'en',
+});
+const breadcrumbs = breadcrumbJsonLd([
+  { name: 'Home', url: absoluteUrl('/') },
+  { name: 'Services', url: absoluteUrl('/services/') },
+  { name: service.title, url: pageUrl },
+]);
 ---
 
-<BaseLayout title={service.title} description={service.summary.replace(/&rsquo;/g, "'").replace(/&mdash;/g, '—')}>
+<BaseLayout title={service.title} description={cleanSummary}>
+  <Fragment slot="head">
+    <script
+      type="application/ld+json"
+      is:inline
+      set:html={JSON.stringify(serviceLd)}
+    />
+    <script
+      type="application/ld+json"
+      is:inline
+      set:html={JSON.stringify(breadcrumbs)}
+    />
+  </Fragment>
   <article>
 
     <!-- Header -->

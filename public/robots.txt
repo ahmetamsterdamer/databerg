@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Internal / non-public routes
+Disallow: /dev/
+Disallow: /api/
+
+Sitemap: https://databerganalytics.com/sitemap-index.xml

@@ -26,6 +26,9 @@ export default defineConfig({
         defaultLocale: 'en',
         locales: { en: 'en', nl: 'nl-NL' },
       },
+      // /dev/ui is the visual-QA page (noindex, to be deleted in Phase 15).
+      // Keep it out of the sitemap so it doesn't end up in Google's index.
+      filter: (page) => !page.includes('/dev/ui'),
     }),
   ],
   vite: {

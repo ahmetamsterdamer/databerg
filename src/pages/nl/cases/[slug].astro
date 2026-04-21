@@ -6,6 +6,7 @@ import Button from '../../../components/ui/Button.astro';
 import Link from '../../../components/ui/Link.astro';
 import Tag from '../../../components/ui/Tag.astro';
 import { getLocalizedService, type ServiceContent } from '../../../lib/services';
+import { caseStudyJsonLd, breadcrumbJsonLd, absoluteUrl } from '../../../lib/seo';
 
 export async function getStaticPaths() {
   const entries: CollectionEntry<'work'>[] = await getCollection(
@@ -35,9 +36,36 @@ const otherEntries = allEntries.filter((e: CollectionEntry<'work'>) => e.id !== 
 const relatedServices: (ServiceContent & { slug: string })[] = (data.services ?? [])
   .map((slug: string) => getLocalizedService(slug, 'nl'))
   .filter((s: (ServiceContent & { slug: string }) | undefined): s is ServiceContent & { slug: string } => Boolean(s));
+
+const cleanSummary = data.summary.replace(/&rsquo;/g, "'").replace(/&mdash;/g, '—');
+const pageUrl = absoluteUrl(`/nl/cases/${data.slug ?? entry.id.replace(/^nl\//, '')}/`);
+const caseLd = caseStudyJsonLd({
+  title: data.title,
+  description: cleanSummary,
+  publishedAt: data.publishedAt,
+  url: pageUrl,
+  locale: 'nl',
+});
+const breadcrumbs = breadcrumbJsonLd([
+  { name: 'Home', url: absoluteUrl('/nl/') },
+  { name: 'Cases', url: absoluteUrl('/nl/cases/') },
+  { name: data.title, url: pageUrl },
+]);
 ---
 
-<BaseLayout title={data.title} description={data.summary.replace(/&rsquo;/g, "'").replace(/&mdash;/g, '—')}>
+<BaseLayout title={data.title} description={cleanSummary}>
+  <Fragment slot="head">
+    <script
+      type="application/ld+json"
+      is:inline
+      set:html={JSON.stringify(caseLd)}
+    />
+    <script
+      type="application/ld+json"
+      is:inline
+      set:html={JSON.stringify(breadcrumbs)}
+    />
+  </Fragment>
   <article>
 
     <section class="mx-auto max-w-7xl px-6 pt-24 md:pt-32">
