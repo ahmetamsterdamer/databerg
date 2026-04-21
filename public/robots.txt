@@ -5,4 +5,4 @@ Allow: /
 Disallow: /dev/
 Disallow: /api/
 
-Sitemap: https://databerganalytics.com/sitemap-index.xml
+Sitemap: https://databerganalytics.nl/sitemap-index.xml

@@ -8,7 +8,7 @@
  * a `<script type="application/ld+json" set:html={...} />` tag.
  */
 
-export const SITE_URL = 'https://databerganalytics.com';
+export const SITE_URL = 'https://databerganalytics.nl';
 export const SITE_NAME = 'databerganalytics';
 export const FOUNDER_NAME = 'Ahmet Karabaş';
 export const FOUNDER_URL = 'https://linkedin.com/in/ahmetkarabas3917';

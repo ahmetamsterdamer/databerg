@@ -189,7 +189,7 @@ function template({ kicker, title }) {
                           textTransform: 'uppercase',
                           color: T.inkMuted,
                         },
-                        children: 'databerganalytics.com',
+                        children: 'databerganalytics.nl',
                       },
                     },
                   ],

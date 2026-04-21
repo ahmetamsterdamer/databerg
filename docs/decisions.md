@@ -75,6 +75,7 @@
 - **2026-04-21** — Phase 15: single bilingual 404 page instead of separate `/nl/404`. Reason: Cloudflare Workers serves one `404.html` regardless of attempted path — there is no locale to branch on at 404 time. Stacked EN + NL (with `lang="nl"` on the Dutch region) is the honest affordance for mixed-audience traffic.
 - **2026-04-21** — Phase 15: Plausible tracker gated on `PUBLIC_PLAUSIBLE_DOMAIN`. When unset, no script is emitted and no tracking happens. Reason: keeps dev environment quiet; makes production opt-in via Cloudflare secret, not repo-level config. Self-hosting supported via `PUBLIC_PLAUSIBLE_SRC` override.
 - **2026-04-21** — Phase 15: `/dev/ui` visual-QA page deleted. Reason: Phase 3 flagged it for removal pre-launch; the Button/Input/Tag/Link primitives are now used in real pages, so the kitchen-sink page no longer earns its keep.
+- **2026-04-21** — Canonical domain = `databerganalytics.nl` (not `.com`). Every hardcoded hostname updated: `astro.config.mjs`, `src/lib/seo.ts`, `public/robots.txt`, `.env.example` example, OG card footer. Reason: user owns the `.nl` TLD; aligns with NL-primary audience. All `og:image`, canonical, hreflang, sitemap, and JSON-LD URLs re-emit with the new host on next build.
 
 ---
 

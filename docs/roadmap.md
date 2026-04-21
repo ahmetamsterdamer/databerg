@@ -168,7 +168,7 @@ Goal: an empty Astro site that builds, typechecks, and serves a blank `index.ast
 - [ ] **Sign up for Cloudflare Turnstile** (free). Create a site, paste the hostname. Set `PUBLIC_TURNSTILE_SITE_KEY` + `TURNSTILE_SECRET_KEY`. Without it the form works; the captcha widget and siteverify are skipped (form is still honeypotted).
 - [ ] **Sign up for Cal.com** (or equivalent). Create a booking page. Replace the placeholder URL in `src/pages/contact.astro` and `src/pages/nl/contact.astro`.
 - [ ] **Sign up for Plausible** (or point at a self-hosted instance). Set `PUBLIC_PLAUSIBLE_DOMAIN` to the hostname you register.
-- [ ] **Custom domain + HTTPS.** Point `databerganalytics.com` at the Cloudflare Worker; HTTPS is automatic. Update `astro.config.mjs` `SITE` constant only if the canonical hostname changes — it already matches.
+- [ ] **Custom domain + HTTPS.** Point `databerganalytics.nl` at the Cloudflare Worker; HTTPS is automatic. (`astro.config.mjs` `SITE` and `src/lib/seo.ts` `SITE_URL` already use `.nl`.)
 - [ ] **Contact form end-to-end smoke test with real delivery.** After the three env vars above are set, submit the form on `/contact` and `/nl/contact`. Confirm mail arrives at `ahmetkarabasdtengineer@gmail.com` with `reply_to` set to the sender.
 - [ ] **In-browser axe DevTools pass.** The seven representative URLs listed in `docs/qa.md`. Record any findings there.
 - [ ] **Post-launch checklist.** Monitor the Resend dashboard and inbox for 48 h; confirm no silent drops.
