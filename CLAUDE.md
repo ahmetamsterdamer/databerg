@@ -23,7 +23,7 @@
 These are non-negotiable. If a request would break one of these, flag it and ask before proceeding.
 
 1. **No banned fonts.** Never use Inter, Roboto, Arial, Poppins, Montserrat, or system-ui stacks for display or body. Allowed pairings are defined in section 6.
-2. **No generic AI aesthetics.** No purple-to-pink gradient heroes. No `rounded-2xl` on every component. No stock photos of smiling people. No emoji used as iconography.
+2. **No generic AI aesthetics.** No purple-to-pink gradient heroes. No `rounded-2xl` on every component. No stock photos of smiling people. No emoji used as iconography. **Exception:** the bee mascot brand mark (`public/images/bee.png` + favicon set) is the single sanctioned illustrated character — it carries identity, nothing else. Do not introduce additional mascots, characters, or decorative illustrations elsewhere on the site.
 3. **No hardcoded colors in components.** All colors come from CSS variables in `src/styles/tokens.css`. If a new token is needed, add it to tokens first, then use it.
 4. **No lorem ipsum in committed code.** Either write real placeholder copy in the project's tone, or leave a `TODO(copy):` comment and stop — ask the user for content.
 5. **No component without states.** Every interactive component ships with `:hover`, `:focus-visible`, `:disabled`, and `:active` at minimum. No exceptions.
@@ -137,7 +137,9 @@ Chosen direction: **Swiss precision on an atmospheric dark canvas.**
 - Swiss precision governs **layout and typography**: strict grid, generous whitespace, left-aligned headlines, tight vertical rhythm, no decorative flourishes.
 - Atmospheric dark governs the **color palette**: deep near-black `--bg`, quiet `--surface` lift, warm off-white `--ink`, a single warm accent. Light mode exists as a tight inversion — not a separate aesthetic.
 
-Commit to it across the entire site. If a component "feels off the brand", the component is wrong, not the brand. Fix the component. Soft gradients, glassmorphism, and decorative illustration are explicitly out of scope.
+Commit to it across the entire site. If a component "feels off the brand", the component is wrong, not the brand. Fix the component. Soft gradients and glassmorphism remain out of scope.
+
+**Brand mark (exception to the illustration rule):** the identity mark is a bee mascot — yellow/green/black cartoon bee with round glasses holding a laptop + chart. It lives *only* in identity slots: favicon set, navbar logo lockup (paired with the `databerganalytics` wordmark), footer logo lockup, 404 page mascot, and social avatar / apple-touch-icon. Everywhere else on the site — hero, sections, case studies, illustrations, empty states, loading states — the Swiss-precision-on-dark rule holds unchanged. The mascot is a deliberate warm-up at the identity layer, not a license to add decorative illustration to content.
 
 ---
 

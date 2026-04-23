@@ -3,7 +3,6 @@
 // stays consistent. Flip to 1st-person ("I") if a warmer tone is preferred.
 // TODO(copy): operating principles below are drafted; user to confirm they match how the
 // practice actually operates (or edit). Banned words scanned — clear.
-// TODO(copy): add a photo when available; <img> slot already positioned in the intro block.
 
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Button from '../components/ui/Button.astro';
@@ -123,18 +122,15 @@ const certifications = [
       <div class="mx-auto grid max-w-7xl gap-12 px-6 py-20 md:grid-cols-12 md:py-28">
         <div class="md:col-span-4">
           <p class="font-mono text-xs uppercase tracking-wider text-accent">01 &middot; Who</p>
-          <!-- TODO(copy): drop a real photo in /public/images/ahmet.jpg, then replace
-               the <div aria-hidden> placeholder below with a next/image Image component. -->
-          <div
-            aria-hidden="true"
-            class="mt-6 aspect-[3/4] max-w-xs border border-line bg-surface"
-          >
-            <div class="flex h-full items-center justify-center">
-              <span class="font-mono text-[10px] uppercase tracking-wider text-ink-muted">
-                photo &middot; pending
-              </span>
-            </div>
-          </div>
+          <img
+            src="/images/ahmet.jpeg"
+            alt="Ahmet Karaba&scedil;, Azure Data Engineer based in Amsterdam"
+            width="1200"
+            height="1600"
+            loading="lazy"
+            decoding="async"
+            class="mt-6 aspect-[3/4] max-w-xs border border-line object-cover"
+          />
           <p class="mt-6 font-display text-2xl leading-tight tracking-tight">Ahmet Karaba&scedil;</p>
           <p class="mt-1 text-sm text-ink-muted">Azure Data Engineer &middot; Amsterdam</p>
         </div>
